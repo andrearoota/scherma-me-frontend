@@ -1,6 +1,6 @@
-import { createTheme } from '@mui/material/styles'
+import { createTheme, responsiveFontSizes } from '@mui/material/styles'
 
-export const themeOptions = createTheme({
+export const themeOptions = responsiveFontSizes(createTheme({
   palette: {
     mode: 'light',
     primary: {
@@ -40,4 +40,4 @@ export const themeOptions = createTheme({
   shape: {
     borderRadius: 25
   }
-})
+}))
