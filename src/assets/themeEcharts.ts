@@ -23,7 +23,9 @@ export const themeEcharts =
     '#c14089'
   ],
   backgroundColor: 'rgba(0,0,0,0)',
-  textStyle: {},
+  textStyle: {
+    fontFamily: 'Roboto, sans-serif'
+  },
   title: {
     textStyle: {
       color: '#008acd'
