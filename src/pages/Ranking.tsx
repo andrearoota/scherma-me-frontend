@@ -13,6 +13,8 @@ import CardGenderStats from '../components/cards/CardGenderStats'
 import { DataFrame, toJSON } from 'danfojs'
 import CardWeaponStats from '../components/cards/CardWeaponStats'
 import { Divider } from '@mui/material'
+import CardClubStats from '../components/cards/CardClubStats'
+import unique from '../utils/unique'
 
 // ----------------------------------------------------------------------
 export interface RankingApi {
@@ -68,6 +70,7 @@ export default function Ranking (): JSX.Element {
   const [genderFilter, setGenderFilter] = React.useState<string[]>([])
   const [genderChartData, setGenderChartData] = React.useState<Array<{ name: string, value: number }>>([])
   const [weaponChartData, setWeaponChartData] = React.useState<Array<{ name: string, value: number }>>([])
+  const [clubChartData, setClubChartData] = React.useState<Array<{ name: string, value: number }>>([])
   const [filter, setFilter] = React.useState<Array<{ weapon: string, gender: string }>>([])
   /* const [categoryFilter, setCategoryFilter] = React.useState<string[]>([]) */
 
@@ -106,34 +109,53 @@ export default function Ranking (): JSX.Element {
   }, [weaponFilter, genderFilter])
 
   React.useEffect(() => {
+    if (rankingData.length === 0) {
+      setGenderChartData([])
+      setWeaponChartData([])
+      setClubChartData([])
+      return undefined
+    }
+
     let data: Athlete[] = []
     rankingData.forEach((item) => {
       data = data.concat(item.data.rows.map((row) => {
-        return { ...row.athlete, gender: item.data.gender }
+        return { ...row.athlete, gender: item.data.gender, weapon: item.data.weapon, club: row.club.code_letter }
       }))
     })
 
     // Remove duplicates
-    data = data.filter((value, index, self) =>
-      index === self.findIndex((t) => (
-        t.fis_code === value.fis_code
-      ))
-    )
+    const df = new DataFrame(unique(data, 'fis_code'))
 
-    if (data.length === 0) {
-      setGenderChartData([])
-      setWeaponChartData([])
-      return undefined
-    }
-    const df = new DataFrame(data)
-    const groupByGender = df.groupby(['gender'])
-
-    setGenderChartData(Object.entries(toJSON(groupByGender.count()) ?? {}).map(([key, value]) => {
+    setGenderChartData(Object.entries(toJSON(df.groupby(['gender']).count()) ?? {}).map(([key, value]) => {
       return {
         name: value.gender === 'M' ? 'Maschi' : 'Femmine',
         value: value.fis_code_count
       }
     }))
+
+    const newClubChartData: Array<{ name: string, value: number }> = []
+    Object.keys(weapons).forEach((item) => {
+      let clubs: string[] = []
+
+      rankingData.forEach((ranking) => {
+        if (ranking.data.weapon.trim().toLowerCase() === item) {
+          clubs = clubs.concat(ranking.data.rows.map((row): string => {
+            return row.club.code_letter
+          }))
+        }
+      })
+
+      const countClub = new Set(clubs).size
+
+      if (countClub > 0) {
+        newClubChartData.push({
+          name: weapons[item],
+          value: countClub
+        })
+      }
+    })
+
+    setClubChartData(newClubChartData ?? [])
 
     const newWeaponChartData: Array<{ name: string, value: number }> = []
     Object.keys(weapons).forEach((item) => {
@@ -161,8 +183,8 @@ export default function Ranking (): JSX.Element {
                     <CheckboxChip
                         listOfChips={[
                           { label: 'Fioretto', value: 'f' },
-                          { label: 'Spada', value: 'sp' },
-                          { label: 'Sciabola', value: 'sc' }
+                          { label: 'Sciabola', value: 'sc' },
+                          { label: 'Spada', value: 'sp' }
                         ]}
                         setSelectedChips={setWeaponFilter}
                         selectedChips={weaponFilter}
@@ -201,6 +223,9 @@ export default function Ranking (): JSX.Element {
               </Grid>
               <Grid xs={12} md={6} xl={3}>
                 <CardWeaponStats chartData={weaponChartData} rankingData={rankingData} />
+              </Grid>
+              <Grid xs={12} md={6} xl={3}>
+                <CardClubStats chartData={clubChartData} rankingData={rankingData} />
               </Grid>
             </Grid>
         </Box>

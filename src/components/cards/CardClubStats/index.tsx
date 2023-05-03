@@ -2,16 +2,15 @@
 import { Card, CardContent, Grid, Stack, Typography } from '@mui/material'
 
 // Echarts
-import { PieEchart, type EChartsOption } from '../../echartsComponent/PieEchart'
-import { type RankingApi, genders } from '../../../pages/Ranking'
-import formatNumber from '../../../utils/formatNumber'
+import { GaugeEchart, type EChartsOption } from '../../echartsComponent/GaugeEchart'
+import { type RankingApi, weapons } from '../../../pages/Ranking'
 import CircleIcon from '@mui/icons-material/Circle'
 import { styled } from '@mui/material/styles'
 import { themeEcharts } from '../../../assets/themeEcharts'
 
 // ----------------------------------------------------------------------
 
-interface CardGenderStatsProps {
+interface CardClubStatsProps {
   chartData: Array<{ name: string, value: number }>
   rankingData: RankingApi[]
 }
@@ -26,42 +25,77 @@ const StyledCircleIcon = styled(CircleIcon)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function CardGenderStats ({ chartData, rankingData }: CardGenderStatsProps): JSX.Element {
+export default function CardClubStats ({ chartData, rankingData }: CardClubStatsProps): JSX.Element {
+  const uniqueClubs = new Set(rankingData.map((item) => item.data.rows.map((row) => row.club.code_letter)).flat()).size
+
   const option: EChartsOption = {
+    legend: {
+      show: true,
+      bottom: 'bottom',
+      left: 'center',
+      selectedMode: false,
+      icon: 'circle'
+    },
     series: [
       {
-        type: 'pie',
-        radius: ['50%', '80%'],
-        avoidLabelOverlap: false,
-        itemStyle: {
-          borderRadius: 10,
-          borderColor: '#fff',
-          borderWidth: 2
-        },
-        label: {
-          show: true,
-          position: 'inside',
-          formatter: (params) => `${formatNumber(params.percent ?? 0, 0, 0)}%`
-        },
-        emphasis: {
-          disabled: true
-        },
-        labelLine: {
+        type: 'gauge',
+        startAngle: 90,
+        endAngle: -270,
+        radius: '80%',
+        pointer: {
           show: false
         },
-        data: chartData
+        progress: {
+          show: true,
+          overlap: false,
+          roundCap: true,
+          clip: false,
+          itemStyle: {
+            borderWidth: 1,
+            borderColor: '#fff'
+          }
+        },
+        axisLine: {
+          lineStyle: {
+            width: 27
+          }
+        },
+        splitLine: {
+          show: false
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          show: false
+        },
+        data: chartData.map((item) => {
+          return {
+            name: item.name,
+            value: item.value,
+            title: {
+              show: false
+            },
+            detail: {
+              show: false
+            }
+          }
+        }),
+        max: uniqueClubs,
+        detail: {
+          show: false
+        }
       }
     ]
   }
-
-  const genderGrid: JSX.Element[] = genderGridBuilder(chartData)
+  const clubGrid: JSX.Element[] = clubGridBuilder(chartData)
 
   return (
 
       <Card>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-              Atleti
+              Club per arma
           </Typography>
           <Grid container sx={{ flexGrow: 1 }}>
             <Grid item xs={4} sm={12}>
@@ -69,20 +103,20 @@ export default function CardGenderStats ({ chartData, rankingData }: CardGenderS
                 <Grid item xs={'auto'}>
                 <Stack>
                   <Typography variant="h3" component='p' sx={{ color: (theme) => theme.palette.primary.main }}>
-                    {chartData.reduce((acc, curr) => acc + curr.value, 0)}
+                    {uniqueClubs}
                   </Typography>
                   <Typography variant="body2">
-                    Atleti
+                    Totale
                   </Typography>
                 </Stack>
                 </Grid>
-                {genderGrid}
+                {clubGrid}
               </Grid>
             </Grid>
             <Grid item xs={8} sm={12} display={'flex'}>
               <Grid container direction={{ xs: 'column', sm: 'row' }} sx={{ flexGrow: 1 }}>
                 <Grid item xs={12} display={'flex'} alignItems={'center'}>
-                  <PieEchart
+                  <GaugeEchart
                     option={option}
                     style={{ height: '100%', minHeight: '175px', maxHeight: '225px' }}
                   />
@@ -95,18 +129,18 @@ export default function CardGenderStats ({ chartData, rankingData }: CardGenderS
   )
 }
 
-function genderGridBuilder (data: Array<{ name: string, value: number }>): JSX.Element[] {
-  return Object.keys(genders).map((item, index) => {
+function clubGridBuilder (data: Array<{ name: string, value: number }>): JSX.Element[] {
+  return Object.keys(weapons).map((item, index) => {
     return (
       <Grid item xs={'auto'} key={index}>
       <Stack>
         <Typography variant="h4" component='p' sx={{ color: (theme) => theme.palette.primary.main }}>
-        {data.find((element) => element.name[0].toLowerCase() === item[0].toLowerCase())?.value ?? 0}
+        {data.find((element) => element.name.toLowerCase() === weapons[item].toLowerCase())?.value ?? 0}
         </Typography>
         <Stack direction={'row'}>
           <StyledCircleIcon sx={{ color: themeEcharts.color[index] }} />
           <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
-            {item === 'm' ? 'Maschi' : 'Femmine'}
+            {weapons[item]}
           </Typography>
         </Stack>
       </Stack>

@@ -5,6 +5,10 @@ import { Card, CardContent, Grid, Stack, Typography } from '@mui/material'
 import { PieEchart, type EChartsOption } from '../../echartsComponent/PieEchart'
 import { weapons, type RankingApi } from '../../../pages/Ranking'
 import formatNumber from '../../../utils/formatNumber'
+import { themeEcharts } from '../../../assets/themeEcharts'
+import CircleIcon from '@mui/icons-material/Circle'
+import { styled } from '@mui/material/styles'
+
 // ----------------------------------------------------------------------
 
 interface CardWeaponStatsProps {
@@ -12,21 +16,22 @@ interface CardWeaponStatsProps {
   rankingData: RankingApi[]
 }
 
+// ----------------------------------------------------------------------
+
+const StyledCircleIcon = styled(CircleIcon)(({ theme }) => ({
+  alignSelf: 'center',
+  fontSize: '1rem',
+  marginRight: theme.spacing(0.5)
+}))
+
+// ----------------------------------------------------------------------
+
 export default function CardWeaponStats ({ chartData, rankingData }: CardWeaponStatsProps): JSX.Element {
   const option: EChartsOption = {
-    tooltip: {
-      trigger: 'none'
-    },
-    legend: {
-      bottom: 'bottom',
-      left: 'center',
-      selectedMode: false,
-      icon: 'circle'
-    },
     series: [
       {
         type: 'pie',
-        radius: ['40%', '70%'],
+        radius: ['50%', '80%'],
         avoidLabelOverlap: false,
         itemStyle: {
           borderRadius: 10,
@@ -44,7 +49,15 @@ export default function CardWeaponStats ({ chartData, rankingData }: CardWeaponS
         labelLine: {
           show: false
         },
-        data: chartData
+        data: chartData.map((item, index) => {
+          return {
+            name: weapons[item.name],
+            value: item.value,
+            itemStyle: {
+              color: themeEcharts.color[index]
+            }
+          }
+        })
       }
     ]
   }
@@ -52,20 +65,26 @@ export default function CardWeaponStats ({ chartData, rankingData }: CardWeaponS
   return (
       <Card>
         <CardContent>
-          <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+          <Typography gutterBottom variant="h5" component="div">
+              Atleti per arma
+          </Typography>
+          <Grid container sx={{ flexGrow: 1 }}>
             <Grid item xs={4} sm={12}>
-              <Grid container direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ flexGrow: 1 }}>
+              <Grid container direction={{ xs: 'column', sm: 'row' }} sx={{ flexGrow: 1 }} display={'flex'} justifyContent={{ xs: 'space-between', sm: 'space-around' }} alignItems={'baseline'}>
                 {
                   Object.keys(weapons).map((item, index) => {
                     return (
-                      <Grid item xs={4} key={index}>
+                      <Grid item xs={'auto'} key={index}>
                       <Stack>
-                        <Typography variant="h3" component='p' sx={{ color: (theme) => theme.palette.primary.main }}>
+                        <Typography variant="h4" component='p' sx={{ color: (theme) => theme.palette.primary.main }}>
                         {rankingData.reduce((acc, curr) => curr.data.weapon.trim().toLowerCase() === item ? acc + curr.data.rows.length : acc, 0)}
                         </Typography>
-                        <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
-                          {weapons[item]}
-                        </Typography>
+                        <Stack direction={'row'}>
+                          <StyledCircleIcon sx={{ color: themeEcharts.color[index] }} />
+                          <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                            {weapons[item]}
+                          </Typography>
+                        </Stack>
                       </Stack>
                     </Grid>
                     )
@@ -74,7 +93,7 @@ export default function CardWeaponStats ({ chartData, rankingData }: CardWeaponS
               </Grid>
             </Grid>
             <Grid item xs={8} sm={12} display={'flex'}>
-              <Grid container direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ flexGrow: 1 }}>
+              <Grid container direction={{ xs: 'column', sm: 'row' }} sx={{ flexGrow: 1 }}>
                 <Grid item xs={12} display={'flex'} alignItems={'center'}>
                   <PieEchart
                     option={option}
