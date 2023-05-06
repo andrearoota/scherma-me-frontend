@@ -1,5 +1,3 @@
-import { styled } from '@mui/material/styles'
-import Grid from '@mui/material/Unstable_Grid2/Grid2'
 import PersonIcon from '@mui/icons-material/Person'
 import GroupsIcon from '@mui/icons-material/Groups'
 import LargeScreenSearch from './LargeScreenSearch'
@@ -7,26 +5,17 @@ import ClearIcon from '@mui/icons-material/Clear'
 import { useQuery } from '@tanstack/react-query'
 
 import * as React from 'react'
-import { type ListItemProps, Typography } from '@mui/material'
+import { type ListItemButtonProps, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import SmallScreenSearch from './SmallScreenSearch'
 
 import { getSearch } from '../../../api/search'
 
-const StyledLargeScreenSearch = styled(LargeScreenSearch)(({ theme }) => ({
-  display: 'none',
-  [theme.breakpoints.up('md')]: {
-    display: 'flex'
-  }
-}))
+import Cookies from 'universal-cookie'
+import useResponsive from '../../../hooks/useResponsive'
 
-const StyledSmallScreenSearch = styled(SmallScreenSearch)(({ theme }) => ({
-  display: 'flex',
-  [theme.breakpoints.up('md')]: {
-    display: 'none'
-  }
-}))
+// ----------------------------------------------------------------------
 
-interface SearchApiResponse {
+export interface SearchApiResponse {
   data: {
     hits: SearchResultType[]
     hitsPerPage: number
@@ -39,7 +28,7 @@ interface SearchApiResponse {
   message?: string
 }
 
-interface SearchResultType {
+export interface SearchResultType {
   full_name?: string
   fis_code?: string
   type?: string
@@ -49,8 +38,13 @@ interface SearchResultType {
   name?: string
 }
 
+// ----------------------------------------------------------------------
+
 export default function SearchForm (): JSX.Element {
+  const cookies = new Cookies()
+
   const [inputValue, setInputValue] = React.useState('')
+  const [recentSearches, setRecentSearches] = React.useState<SearchResultType[]>(cookies.get('recentSearches') ?? [])
 
   const { data } = useQuery({
     queryKey: ['searchData', inputValue],
@@ -74,43 +68,54 @@ export default function SearchForm (): JSX.Element {
   const params = {
     freeSolo: true,
     onInputChange: (event: Event, newInputValue: string) => { setInputValue(newInputValue) },
-    options: data?.hits ?? [],
+    options: data?.hits ?? recentSearches,
     // "you will need to disable the built-in filtering of the Autocomplete component by overriding the filterOptions prop"
     filterOptions: (x: any) => x,
     noOptionsText: 'Nessun risultato',
-    getOptionLabel: (option: SearchResultType) => option.fis_code,
-    renderOption: (props: ListItemProps, option: SearchResultType) => (
-            <li {...props}>
-                <Grid container alignItems="center">
-                    <Grid sx={{ display: 'flex', width: 44 }}>
-                        {option.type === 'club'
-                          ? <GroupsIcon sx={{ color: (theme) => theme.palette.text.secondary }} />
-                          : <PersonIcon sx={{ color: (theme) => theme.palette.text.secondary }} />}
-                    </Grid>
-                    <Grid sx={{ width: 'calc(100% - 44px)', wordWrap: 'break-word' }}>
-                        <Typography variant="body1" color="text.primary" sx={{ textTransform: 'capitalize' }}>
-                            {option.full_name}
-                        </Typography>
-
-                        <Typography variant="body2" color="text.secondary">
-                            {option.type === 'club' ? option.fis_code : option.birth_year}
-                        </Typography>
-                    </Grid>
-                </Grid>
-            </li>
-    ),
+    getOptionLabel: (option: SearchResultType) => option.full_name,
+    onChange: (event: Event, newValue: SearchResultType | null) => { if (newValue !== null) setRecentSearches(setCookiesSearch(cookies, newValue)) },
+    ListboxProps: { dense: true },
+    renderOption: (props: ListItemButtonProps, option: SearchResultType) =>
+      (
+      <ListItemButton {...props} sx={{ borderRadius: (theme) => theme.shape.borderRadius }}>
+        <ListItemIcon>
+        {option.type === 'club'
+          ? <GroupsIcon sx={{ color: (theme) => theme.palette.text.secondary }} />
+          : <PersonIcon sx={{ color: (theme) => theme.palette.text.secondary }} />}
+        </ListItemIcon>
+        <ListItemText // DA CAPITALIZZARE
+          primary={option.full_name}
+          secondary={option.type === 'club' ? option.fis_code : option.birth_year}
+          sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+        />
+      </ListItemButton>
+      ),
     clearIcon: (<ClearIcon fontSize="medium" />)
   }
 
   return (
-        <>
-            <StyledLargeScreenSearch
-                {...params}
-            />
-            <StyledSmallScreenSearch
-                {...params}
-            />
-        </>
+    useResponsive('up', 'lg')
+      ? <LargeScreenSearch {...params} />
+      : <SmallScreenSearch {...params} />
 
   )
+}
+
+function setCookiesSearch (cookies: Cookies, option: SearchResultType): SearchResultType[] {
+  const cookiesOptions = {
+    path: '/',
+    maxAge: 3600 * 24 * 7
+  }
+
+  let recentSearches: SearchResultType[] = []
+
+  try {
+    recentSearches = (cookies.get('recentSearches') ?? []).filter((item: SearchResultType) => item.fis_code !== option.fis_code).slice(0, 7)
+    recentSearches.unshift(option) // add to the beginning of the array, now because "unshift" returns the new length of the array
+    cookies.set('recentSearches', recentSearches, cookiesOptions)
+  } catch (error) {
+    cookies.remove('recentSearches', cookiesOptions)
+  }
+
+  return recentSearches
 }

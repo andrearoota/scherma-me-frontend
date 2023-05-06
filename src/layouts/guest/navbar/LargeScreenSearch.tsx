@@ -49,7 +49,9 @@ const StyledAutocomplete = styled(Autocomplete)(({ theme }) => ({
     padding: theme.spacing(0, 2)
   },
   '& .MuiAutocomplete-clearIndicator': {
-    color: theme.palette.primary.contrastText
+    color: theme.palette.primary.contrastText,
+    visibility: 'visible',
+    top: 'calc(50% - 16px)'
   }
 }))
 
@@ -65,7 +67,7 @@ export default function LargeScreenSearch (props: any): JSX.Element {
             {...props}
             id="custom-input-demo"
             PaperComponent={StyledPaperAutocomplete}
-            ListboxProps={{ style: { maxHeight: '85vh' } }}
+            ListboxProps={{ style: { maxHeight: '85vh' }, ...props.ListboxProps }}
             renderInput={(params) => (
                 <StyledInputBase
                     ref={params.InputProps.ref}
