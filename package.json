@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "scherma-me",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -18,7 +18,6 @@
     "@types/react": "^18.2.2",
     "@types/react-dom": "^18.2.3",
     "axios": "^1.4.0",
-    "danfojs": "^1.1.2",
     "echarts": "^5.4.2",
     "material-react-table": "^1.11.2",
     "react": "^18.2.0",
