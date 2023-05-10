@@ -1,9 +1,6 @@
 import { useMemo } from 'react'
 
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-
-import { Stack, useTheme } from '@mui/material'
+import { useTheme } from '@mui/material'
 
 import MaterialReactTable, {
   type MRT_ColumnDef
@@ -11,45 +8,41 @@ import MaterialReactTable, {
 
 import { MRT_Localization_IT } from 'material-react-table/locales/it'
 
-import formatNumber from '../../../utils/formatNumber'
-import { type Row, type Ranking } from '../../../pages/RankingPage'
-
 // ---------------------------------------------
 
 interface TableProps {
-  data: Ranking | undefined
+  data: any[] | undefined
   isError: boolean
   isLoading: boolean
 }
 
 // ---------------------------------------------
 
-export default function TableRankingBase ({ data, isError, isLoading }: TableProps): JSX.Element {
+export default function TableBase ({ data, isError, isLoading }: TableProps): JSX.Element {
   const theme = useTheme()
-  const columns = useMemo<Array<MRT_ColumnDef<Row>>>(
+  const columns = useMemo<Array<MRT_ColumnDef<any>>>(
     () => [
       {
-        accessorKey: 'position',
-        header: 'Pos',
-        muiTableBodyCellProps: {
-          align: 'center'
-        }
-      },
-      {
-        accessorKey: 'athlete.full_name',
-        header: 'Nome'
-      },
-      {
-        accessorFn: (row) => formatNumber(row.total_points),
-        header: 'Punti',
-        muiTableBodyCellProps: {
-          align: 'right'
-        }
-      },
-      {
+        accessorKey: 'name',
         header: 'Club',
-        accessorKey: 'club.code_letter',
-        enableHiding: true
+        muiTableBodyCellProps: {
+          align: 'left'
+        },
+        muiTableHeadCellProps: {
+          align: 'left'
+        }
+      },
+      {
+        header: 'Fioretto',
+        accessorKey: 'weaponByAthletes.fioretto'
+      },
+      {
+        header: 'Sciabola',
+        accessorKey: 'weaponByAthletes.sciabola'
+      },
+      {
+        header: 'Spada',
+        accessorKey: 'weaponByAthletes.spada'
       }
     ],
     []
@@ -58,41 +51,20 @@ export default function TableRankingBase ({ data, isError, isLoading }: TablePro
   return (
         <MaterialReactTable
           columns={columns}
-          data={data?.data.rows ?? []} // data is undefined on first render
+          data={data ?? []} // data is undefined on first render
           localization={MRT_Localization_IT}
           enableColumnActions={false}
           enableFullScreenToggle={false}
           enableDensityToggle={false}
-          enableSorting={false}
+          enableSorting={true}
+          enableMultiSort={true}
           enableHiding={false}
           enableColumnFilters={false}
-          enableExpanding={true}
-          enableExpandAll={true}
+          enableExpanding={false}
+          enableExpandAll={false}
+          initialState={{ sorting: [{ id: 'name', desc: false }] }}
           state={{ density: 'compact', isLoading }}
-          rowCount={data?.data.rows.length ?? 0} // Not get lenght from api because get all data
-          renderDetailPanel={({ row }) => (
-              <Box
-                  sx={{
-                    display: 'grid',
-                    margin: 'auto',
-                    gridTemplateColumns: '1fr 1fr 2fr',
-                    width: '100%'
-                  }}
-              >
-                <Stack spacing={0}>
-                  <Typography variant='body2' sx={{ fontWeight: 'bold' }}>Anno</Typography>
-                  <Typography variant='body2' >{row.original.athlete.birth_year}</Typography>
-                </Stack>
-                <Stack spacing={0}>
-                  <Typography variant='body2' sx={{ fontWeight: 'bold' }}>FIS</Typography>
-                  <Typography variant='body2' >{row.original.athlete.fis_code}</Typography>
-                  </Stack>
-                <Stack spacing={0}>
-                  <Typography variant='body2' sx={{ fontWeight: 'bold' }}>Club</Typography>
-                  <Typography variant='body2' sx={{ textTransform: 'capitalize' }}>{row.original.club.name.toLowerCase() ?? row.original.club.code_letter.toUpperCase()}</Typography>
-                </Stack>
-              </Box>
-          )}
+          rowCount={data?.length ?? 0} // Not get lenght from api because get all data
           defaultColumn={{
             minSize: 20, // allow columns to get smaller than default
             maxSize: 100, // allow columns to get larger than default
@@ -143,7 +115,10 @@ export default function TableRankingBase ({ data, isError, isLoading }: TablePro
             rowsPerPageOptions: [10]
           }}
           muiTableHeadCellProps={{
-            align: 'center'
+            align: 'right'
+          }}
+          muiTableBodyCellProps={{
+            align: 'right'
           }}
           displayColumnDefOptions={{
             'mrt-row-expand': {

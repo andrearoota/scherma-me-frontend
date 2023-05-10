@@ -3,7 +3,7 @@ import { Card, CardContent, Grid, Stack, Typography } from '@mui/material'
 
 // Echarts
 import { GaugeEchart, type EChartsOption } from '../../echartsComponent/GaugeEchart'
-import { type RankingApi, weapons } from '../../../pages/Ranking'
+import { weapons, type ChartsData } from '../../../pages/RankingPage'
 import CircleIcon from '@mui/icons-material/Circle'
 import { styled } from '@mui/material/styles'
 import { themeEcharts } from '../../../assets/themeEcharts'
@@ -11,8 +11,7 @@ import { themeEcharts } from '../../../assets/themeEcharts'
 // ----------------------------------------------------------------------
 
 interface CardClubStatsProps {
-  chartData: Array<{ name: string, value: number }>
-  rankingData: RankingApi[]
+  chartData: ChartsData[]
 }
 
 // ----------------------------------------------------------------------
@@ -25,8 +24,17 @@ const StyledCircleIcon = styled(CircleIcon)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function CardClubStats ({ chartData, rankingData }: CardClubStatsProps): JSX.Element {
-  const uniqueClubs = new Set(rankingData.map((item) => item.data.rows.map((row) => row.club.code_letter)).flat()).size
+export default function CardClubStats ({ chartData }: CardClubStatsProps): JSX.Element {
+  const uniqueClubs = new Set(chartData.map((item) => item.club).flat()).size
+
+  const dataForChart: Array<{ name: string, value: number }> = []
+
+  Object.values(weapons).forEach((weapon) => {
+    dataForChart.push({
+      name: weapon,
+      value: new Set(chartData.filter((item) => item.weapon === weapon).map((item) => item.club).flat()).size
+    })
+  })
 
   const option: EChartsOption = {
     legend: {
@@ -69,7 +77,7 @@ export default function CardClubStats ({ chartData, rankingData }: CardClubStats
         axisLabel: {
           show: false
         },
-        data: chartData.map((item) => {
+        data: dataForChart.map((item) => {
           return {
             name: item.name,
             value: item.value,
@@ -88,7 +96,7 @@ export default function CardClubStats ({ chartData, rankingData }: CardClubStats
       }
     ]
   }
-  const clubGrid: JSX.Element[] = clubGridBuilder(chartData)
+  const clubGrid: JSX.Element[] = clubGridBuilder(dataForChart)
 
   return (
 

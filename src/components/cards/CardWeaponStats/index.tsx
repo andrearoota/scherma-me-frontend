@@ -1,19 +1,22 @@
 // @mui
-import { Card, CardContent, Grid, Stack, Typography } from '@mui/material'
+import { Button, Card, CardActions, CardContent, Collapse, Grid, Stack, Typography } from '@mui/material'
 
 // Echarts
 import { PieEchart, type EChartsOption } from '../../echartsComponent/PieEchart'
-import { weapons, type RankingApi } from '../../../pages/Ranking'
+import { weapons, type ChartsData } from '../../../pages/RankingPage'
 import formatNumber from '../../../utils/formatNumber'
 import { themeEcharts } from '../../../assets/themeEcharts'
 import CircleIcon from '@mui/icons-material/Circle'
 import { styled } from '@mui/material/styles'
+import TableBase from './TableBase'
+import * as React from 'react'
+import ExpandMoreIcon from '../../ExpandMoreIcon'
 
 // ----------------------------------------------------------------------
 
 interface CardWeaponStatsProps {
-  chartData: Array<{ name: string, value: number }>
-  rankingData: RankingApi[]
+  chartData: ChartsData[]
+  tableData: any[]
 }
 
 // ----------------------------------------------------------------------
@@ -26,7 +29,24 @@ const StyledCircleIcon = styled(CircleIcon)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function CardWeaponStats ({ chartData, rankingData }: CardWeaponStatsProps): JSX.Element {
+export default function CardWeaponStats ({ chartData, tableData }: CardWeaponStatsProps): JSX.Element {
+  const [expanded, setExpanded] = React.useState(false)
+
+  const handleExpandClick = (): void => {
+    setExpanded(!expanded)
+  }
+
+  const dataForChart: Array<{ name: string, value: number, itemStyle: any }> = []
+  Object.values(weapons).forEach((weapon, index) => {
+    dataForChart.push({
+      name: weapon,
+      value: chartData.filter((item) => item.weapon === weapon).length,
+      itemStyle: {
+        color: themeEcharts.color[index]
+      }
+    })
+  })
+
   const option: EChartsOption = {
     series: [
       {
@@ -49,15 +69,7 @@ export default function CardWeaponStats ({ chartData, rankingData }: CardWeaponS
         labelLine: {
           show: false
         },
-        data: chartData.map((item, index) => {
-          return {
-            name: weapons[item.name],
-            value: item.value,
-            itemStyle: {
-              color: themeEcharts.color[index]
-            }
-          }
-        })
+        data: dataForChart
       }
     ]
   }
@@ -72,17 +84,17 @@ export default function CardWeaponStats ({ chartData, rankingData }: CardWeaponS
             <Grid item xs={4} sm={12}>
               <Grid container direction={{ xs: 'column', sm: 'row' }} sx={{ flexGrow: 1 }} display={'flex'} justifyContent={{ xs: 'space-between', sm: 'space-around' }} alignItems={'baseline'}>
                 {
-                  Object.keys(weapons).map((item, index) => {
+                  dataForChart.map((item, index) => {
                     return (
-                      <Grid item xs={'auto'} key={index}>
+                      <Grid item xs={'auto'} key={item.name}>
                       <Stack>
                         <Typography variant="h4" component='p' sx={{ color: (theme) => theme.palette.primary.main }}>
-                        {rankingData.reduce((acc, curr) => curr.data.weapon.trim().toLowerCase() === item ? acc + curr.data.rows.length : acc, 0)}
+                        {item.value}
                         </Typography>
                         <Stack direction={'row'}>
-                          <StyledCircleIcon sx={{ color: themeEcharts.color[index] }} />
+                          <StyledCircleIcon sx={{ color: item.itemStyle.color }} />
                           <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
-                            {weapons[item]}
+                            {item.name}
                           </Typography>
                         </Stack>
                       </Stack>
@@ -103,8 +115,24 @@ export default function CardWeaponStats ({ chartData, rankingData }: CardWeaponS
               </Grid>
             </Grid>
           </Grid>
-
         </CardContent>
+        <CardActions sx={{ justifyContent: 'flex-end' }}>
+                <Button
+                  onClick={handleExpandClick}
+                  aria-expanded={expanded}
+                  aria-label="show more"
+                  >
+                    esplora i dati
+                  <ExpandMoreIcon
+                  expand={expanded}
+                  />
+                </Button>
+            </CardActions>
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
+                <CardContent>
+                    <TableBase data={tableData} isError={false} isLoading={false} />
+                </CardContent>
+            </Collapse>
       </Card>
   )
 }

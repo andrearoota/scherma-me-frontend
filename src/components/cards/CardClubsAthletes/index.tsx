@@ -5,42 +5,21 @@ import Grid from '@mui/material/Unstable_Grid2'
 import LooksOneIcon from '@mui/icons-material/LooksOne'
 import LooksTwoIcon from '@mui/icons-material/LooksTwo'
 import Looks3Icon from '@mui/icons-material/Looks3'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
-import TableRankingBase from './TableRankingBase'
+import TableBase from './TableBase'
 
 import * as React from 'react'
 
-import { Card, CardContent, CardActions, Typography, Button, Collapse, IconButton, type IconButtonProps, Skeleton, Snackbar, Alert, Paper } from '@mui/material'
-import { type Ranking } from '../../../pages/RankingPage'
-import { useQuery } from '@tanstack/react-query'
-import { getRanking } from '../../../api/ranking'
-import { firstLetterCapitalize } from '../../../utils/stringFormatter'
+import { Card, CardContent, CardActions, Typography, Button, Collapse, Skeleton, Paper } from '@mui/material'
+import ExpandMoreIcon from '../../ExpandMoreIcon'
 
 // ----------------------------------------------------------------------
 
-interface ExpandMoreProps extends IconButtonProps {
-  expand: boolean
-}
-
-interface CardPodiumProps {
-  weapon: string
-  gender: string
-  setRankingData: React.Dispatch<React.SetStateAction<Ranking[]>>
+interface CardClubsAthletesProps {
+  tableData: any[]
 }
 
 // ----------------------------------------------------------------------
-
-const ExpandMore = styled((props: ExpandMoreProps) => {
-  const { expand, ...other } = props
-  return <IconButton {...other} />
-})(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest
-  })
-}))
 
 const StyledPodiumName = styled(Typography)(({ theme }) => ({
   textTransform: 'capitalize',
@@ -60,93 +39,71 @@ const StyledPodiumBase = styled(Paper)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function CardPodium ({ weapon, gender, setRankingData }: CardPodiumProps): JSX.Element {
+export default function CardClubsAthletes ({ tableData }: CardClubsAthletesProps): JSX.Element {
   const [expanded, setExpanded] = React.useState(false)
 
   const handleExpandClick = (): void => {
     setExpanded(!expanded)
   }
 
-  const { data, isError, isLoading } =
-        useQuery<Ranking>({
-          queryKey: [
-            'table-data',
-            weapon,
-            gender
-          ],
-          queryFn: async () => {
-            return await getRanking(`/giovani/${weapon}/${gender}`) as Ranking
-          },
-          keepPreviousData: true
-        })
-
-  React.useEffect(() => {
-    if (!isError && !isLoading) {
-      setRankingData((prev) => {
-        return prev.some(item => item.data.id === data?.data.id) ? prev : [...prev, data]
-      }
-      )
-    }
-  }, [data, isError, isLoading, setRankingData])
+  tableData.sort((a, b) => b.athletes - a.athletes)
 
   return (
         <Card>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                  {firstLetterCapitalize(`${weapon} ${gender}`)}
+                  Club per punti
                 </Typography>
                 <Grid container alignItems='stretch' textAlign='center'>
                     <Grid xs={4} sx={{ mt: '16px' }}>
                       <StyledPodiumBase elevation={8}>
                         <LooksTwoIcon fontSize='large' sx={{ color: '#E37B0D' }} />
-                         {isLoading || isError
+                         {tableData.length === 0
                            ? <Skeleton variant="text" sx={{ fontSize: '1rem', width: '10ch' }} />
                            : <StyledPodiumName variant="body1">
-                            {data?.data.rows[1].athlete.full_name}
+                            {tableData[1].name}
                         </StyledPodiumName>}
                       </StyledPodiumBase>
                     </Grid>
                     <Grid xs={4} sx={{ marginLeft: '-4px', marginRight: '-4px', zIndex: 5 }}>
                       <StyledPodiumBase elevation={12}>
                         <LooksOneIcon fontSize='large' sx={{ color: '#F8C21D' }}/>
-                        {isLoading || isError
+                        {tableData.length === 0
                           ? <Skeleton variant="text" sx={{ fontSize: '1rem', width: '10ch' }} />
                           : <StyledPodiumName variant="body1">
-                            {data?.data.rows[0].athlete.full_name}
+                            {tableData[0].name}
                         </StyledPodiumName>}
                       </StyledPodiumBase>
                     </Grid>
                     <Grid xs={4} sx={{ mt: '24px' }}>
                       <StyledPodiumBase elevation={4}>
                         <Looks3Icon fontSize='large' sx={{ color: '#3BACAD' }} />
-                        {isLoading || isError
+                        {tableData.length === 0
                           ? <Skeleton variant="text" sx={{ fontSize: '1rem', width: '10ch' }} />
                           : <StyledPodiumName variant="body1">
-                            {data?.data.rows[2].athlete.full_name}
+                            {tableData[2].name}
                         </StyledPodiumName>}
                       </StyledPodiumBase>
                     </Grid>
                 </Grid>
             </CardContent>
-            <CardActions sx={{ justifyContent: 'space-between' }}>
-                <Button variant='outlined'>Approfondisci</Button>
-                <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                >
-                    <ExpandMoreIcon />
-                </ExpandMore>
+            <CardActions sx={{ justifyContent: 'flex-end' }}>
+                <Button
+                  onClick={handleExpandClick}
+                  aria-expanded={expanded}
+                  aria-label="show more"
+                  >
+                    esplora i dati
+                  <ExpandMoreIcon
+                  expand={expanded}
+                  />
+                </Button>
             </CardActions>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
-                    <TableRankingBase data={data} isError={isError} isLoading={isLoading} />
+                    <TableBase data={tableData} isError={false} isLoading={false} />
                 </CardContent>
             </Collapse>
-            <Snackbar open={isError} autoHideDuration={5000} message={'Errore nel caricamento dei dati!'} key={'bottomcenter'} sx={{ borderRadius: '5px' }}>
-                <Alert severity="error" sx={{ borderRadius: '5px' }}>Errore nel caricamento dei dati!</Alert>
-            </Snackbar>
         </Card>
   )
 }

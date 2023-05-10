@@ -85,7 +85,7 @@ export default function CheckboxChip (props: CheckboxChipProps): JSX.Element {
   return (
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
       <Box>
-        <Typography variant='h6' mb={1}>
+        <Typography variant='body1' mb={1} fontWeight={'bold'}>
           {title}
         </Typography>
         <Box
