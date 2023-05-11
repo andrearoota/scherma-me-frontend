@@ -15,7 +15,7 @@ import ExpandMoreIcon from '../../ExpandMoreIcon'
 
 // ----------------------------------------------------------------------
 
-interface CardClubsAthletesProps {
+interface CardClubsRatioProps {
   tableData: any[]
 }
 
@@ -39,20 +39,36 @@ const StyledPodiumBase = styled(Paper)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function CardClubsAthletes ({ tableData }: CardClubsAthletesProps): JSX.Element {
+export default function CardClubsRatio ({ tableData }: CardClubsRatioProps): JSX.Element {
   const [expanded, setExpanded] = React.useState(false)
 
   const handleExpandClick = (): void => {
     setExpanded(!expanded)
   }
 
-  tableData.sort((a, b) => b.athletes - a.athletes)
+  tableData = tableData.map((club) => {
+    return {
+      name: club.name,
+      ratio: club.points / club.athletes,
+      gender: {
+        femminile: club.genderByAthletes.femminile > 0 ? club.genderByPoints.femminile / club.genderByAthletes.femminile : '-',
+        maschile: club.genderByAthletes.maschile > 0 ? club.genderByPoints.maschile / club.genderByAthletes.maschile : '-'
+      },
+      weapon: {
+        fioretto: club.weaponByAthletes.fioretto > 0 ? club.weaponByPoints.fioretto / club.weaponByAthletes.fioretto : '-',
+        sciabola: club.weaponByAthletes.sciabola > 0 ? club.weaponByPoints.sciabola / club.weaponByAthletes.sciabola : '-',
+        spada: club.weaponByAthletes.spada > 0 ? club.weaponByPoints.spada / club.weaponByAthletes.spada : '-'
+      }
+    }
+  })
+
+  tableData.sort((a, b) => b.ratio - a.ratio)
 
   return (
         <Card>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                Club per numero di atleti
+                  Club per rapporto punti/atleti
                 </Typography>
                 <Grid container alignItems='stretch' textAlign='center'>
                     <Grid xs={4} sx={{ mt: '16px' }}>

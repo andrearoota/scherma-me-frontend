@@ -7,6 +7,7 @@ import MaterialReactTable, {
 } from 'material-react-table'
 
 import { MRT_Localization_IT } from 'material-react-table/locales/it'
+import formatNumber from '../../../utils/formatNumber'
 
 // ---------------------------------------------
 
@@ -54,40 +55,46 @@ export default function TableBase ({ data, isError, isLoading }: TableProps): JS
         }
       },
       {
-        header: 'Atleti per sesso',
+        header: 'Rapporto per sesso',
         id: 'gender',
         columns: [
           {
             header: 'Femminile',
-            accessorKey: 'genderByAthletes.femminile'
+            accessorKey: 'gender.femminile',
+            Cell: (row) => formatNumber(row.cell.getValue<number>())
           },
           {
             header: 'Maschile',
-            accessorKey: 'genderByAthletes.maschile'
+            accessorKey: 'gender.maschile',
+            Cell: (row) => formatNumber(row.cell.getValue<number>())
           }
         ]
       },
       {
-        header: 'Atleti per arma',
+        header: 'Rapporto per arma',
         id: 'weapon',
         columns: [
           {
             header: 'Fioretto',
-            accessorKey: 'weaponByAthletes.fioretto'
+            accessorKey: 'weapon.fioretto',
+            Cell: (row) => formatNumber(row.cell.getValue<number>())
           },
           {
             header: 'Sciabola',
-            accessorKey: 'weaponByAthletes.sciabola'
+            accessorKey: 'weapon.sciabola',
+            Cell: (row) => formatNumber(row.cell.getValue<number>())
           },
           {
             header: 'Spada',
-            accessorKey: 'weaponByAthletes.spada'
+            accessorKey: 'weapon.spada',
+            Cell: (row) => formatNumber(row.cell.getValue<number>())
           }
         ]
       },
       {
         header: 'Totale',
-        accessorKey: 'athletes'
+        accessorKey: 'ratio',
+        Cell: (row) => formatNumber(row.cell.getValue<number>())
       }
     ],
     []
@@ -107,7 +114,7 @@ export default function TableBase ({ data, isError, isLoading }: TableProps): JS
           enableColumnFilters={false}
           enableExpanding={false}
           enableExpandAll={false}
-          initialState={{ sorting: [{ id: 'athletes', desc: true }] }}
+          initialState={{ sorting: [{ id: 'ratio', desc: true }] }}
           state={{ density: 'compact', isLoading }}
           rowCount={data?.length ?? 0} // Not get lenght from api because get all data
           defaultColumn={{

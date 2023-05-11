@@ -15,6 +15,7 @@ import CardClubStats from '../components/cards/CardClubStats'
 import CardClubsPoints from '../components/cards/CardClubsPoints'
 import unique from '../utils/unique'
 import CardClubsAthletes from '../components/cards/CardClubsAthletes'
+import CardClubsRatio from '../components/cards/CardClubsRatio'
 
 // ----------------------------------------------------------------------
 export interface Ranking {
@@ -275,6 +276,9 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
               </Grid>
               <Grid xs={12} md={6} xl={3}>
                 <CardClubsAthletes tableData={chartsData.clubs} />
+              </Grid>
+              <Grid xs={12} md={6} xl={3}>
+                <CardClubsRatio tableData={chartsData.clubs} />
               </Grid>
             </Grid>
         </Box>
