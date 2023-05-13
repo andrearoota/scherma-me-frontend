@@ -92,7 +92,7 @@ export default function TableBase ({ data, isError, isLoading }: TableProps): JS
         ]
       },
       {
-        header: 'Totale',
+        header: 'Generale',
         accessorKey: 'ratio',
         Cell: (row) => formatNumber(row.cell.getValue<number>())
       }
