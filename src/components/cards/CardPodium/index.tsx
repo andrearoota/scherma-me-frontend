@@ -12,7 +12,7 @@ import TableRankingBase from './TableRankingBase'
 import * as React from 'react'
 
 import { Card, CardContent, CardActions, Typography, Button, Collapse, IconButton, type IconButtonProps, Skeleton, Snackbar, Alert, Paper } from '@mui/material'
-import { type Ranking } from '../../../pages/RankingPage'
+import { type Row, type Ranking } from '../../../pages/RankingPage'
 import { useQuery } from '@tanstack/react-query'
 import { getRanking } from '../../../api/ranking'
 import { firstLetterCapitalize } from '../../../utils/stringFormatter'
@@ -26,6 +26,7 @@ interface ExpandMoreProps extends IconButtonProps {
 interface CardPodiumProps {
   weapon: string
   gender: string
+  filterProv: string[]
   setRankingData: React.Dispatch<React.SetStateAction<Ranking[]>>
 }
 
@@ -60,8 +61,9 @@ const StyledPodiumBase = styled(Paper)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function CardPodium ({ weapon, gender, setRankingData }: CardPodiumProps): JSX.Element {
+export default function CardPodium ({ weapon, gender, setRankingData, filterProv }: CardPodiumProps): JSX.Element {
   const [expanded, setExpanded] = React.useState(false)
+  const [dataTable, setDataTable] = React.useState<Ranking | undefined>(undefined)
 
   const handleExpandClick = (): void => {
     setExpanded(!expanded)
@@ -86,8 +88,21 @@ export default function CardPodium ({ weapon, gender, setRankingData }: CardPodi
         return prev.some(item => item.data.id === data?.data.id) ? prev : [...prev, data]
       }
       )
+
+      const newData = JSON.parse(JSON.stringify(data))
+
+      if (newData !== undefined) {
+        newData.data.rows = newData.data.rows.reduce((previousValue: Row[], currentValue: Row) => {
+          if (filterProv.length === 0 || filterProv.some((province) => currentValue.club.code_letter.startsWith(province))) {
+            return [...previousValue, currentValue]
+          }
+          return previousValue
+        }, [])
+      }
+      setDataTable(newData)
     }
-  }, [data, isError, isLoading, setRankingData])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, isError, isLoading, setRankingData, filterProv])
 
   return (
         <Card>
@@ -102,7 +117,7 @@ export default function CardPodium ({ weapon, gender, setRankingData }: CardPodi
                          {isLoading || isError
                            ? <Skeleton variant="text" sx={{ fontSize: '1rem', width: '10ch' }} />
                            : <StyledPodiumName variant="body1">
-                            {data?.data.rows[1].athlete.full_name}
+                            {dataTable?.data.rows[1]?.athlete.full_name ?? '-'}
                         </StyledPodiumName>}
                       </StyledPodiumBase>
                     </Grid>
@@ -112,7 +127,7 @@ export default function CardPodium ({ weapon, gender, setRankingData }: CardPodi
                         {isLoading || isError
                           ? <Skeleton variant="text" sx={{ fontSize: '1rem', width: '10ch' }} />
                           : <StyledPodiumName variant="body1">
-                            {data?.data.rows[0].athlete.full_name}
+                            {dataTable?.data.rows[0]?.athlete.full_name ?? '-'}
                         </StyledPodiumName>}
                       </StyledPodiumBase>
                     </Grid>
@@ -122,7 +137,7 @@ export default function CardPodium ({ weapon, gender, setRankingData }: CardPodi
                         {isLoading || isError
                           ? <Skeleton variant="text" sx={{ fontSize: '1rem', width: '10ch' }} />
                           : <StyledPodiumName variant="body1">
-                            {data?.data.rows[2].athlete.full_name}
+                            {dataTable?.data.rows[2]?.athlete.full_name ?? '-'}
                         </StyledPodiumName>}
                       </StyledPodiumBase>
                     </Grid>
@@ -141,7 +156,7 @@ export default function CardPodium ({ weapon, gender, setRankingData }: CardPodi
             </CardActions>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
-                    <TableRankingBase data={data} isError={isError} isLoading={isLoading} />
+                    <TableRankingBase data={dataTable} isError={isError} isLoading={isLoading} />
                 </CardContent>
             </Collapse>
             <Snackbar open={isError} autoHideDuration={5000} message={'Errore nel caricamento dei dati!'} key={'bottomcenter'} sx={{ borderRadius: '5px' }}>

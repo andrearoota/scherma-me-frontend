@@ -61,7 +61,7 @@ export default function CardClubsAthletes ({ tableData }: CardClubsAthletesProps
                          {tableData.length === 0
                            ? <Skeleton variant="text" sx={{ fontSize: '1rem', width: '10ch' }} />
                            : <StyledPodiumName variant="body1">
-                            {tableData[1].name}
+                            {tableData[1]?.name ?? '-'}
                         </StyledPodiumName>}
                       </StyledPodiumBase>
                     </Grid>
@@ -71,7 +71,7 @@ export default function CardClubsAthletes ({ tableData }: CardClubsAthletesProps
                         {tableData.length === 0
                           ? <Skeleton variant="text" sx={{ fontSize: '1rem', width: '10ch' }} />
                           : <StyledPodiumName variant="body1">
-                            {tableData[0].name}
+                            {tableData[0]?.name ?? '-'}
                         </StyledPodiumName>}
                       </StyledPodiumBase>
                     </Grid>
@@ -81,7 +81,7 @@ export default function CardClubsAthletes ({ tableData }: CardClubsAthletesProps
                         {tableData.length === 0
                           ? <Skeleton variant="text" sx={{ fontSize: '1rem', width: '10ch' }} />
                           : <StyledPodiumName variant="body1">
-                            {tableData[2].name}
+                            {tableData[2]?.name ?? '-'}
                         </StyledPodiumName>}
                       </StyledPodiumBase>
                     </Grid>

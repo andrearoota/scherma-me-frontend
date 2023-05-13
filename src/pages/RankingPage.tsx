@@ -8,14 +8,16 @@ import Box from '@mui/material/Box'
 import CardPodium from '../components/cards/CardPodium'
 import CheckboxChip from '../components/CheckboxChip'
 import CardGenderStats from '../components/cards/CardGenderStats'
+import { type IProvince, province } from '../assets/itProvReg'
 
 import CardWeaponStats from '../components/cards/CardWeaponStats'
-import { Divider, Typography } from '@mui/material'
+import { Autocomplete, Button, Collapse, Divider, TextField, Typography } from '@mui/material'
 import CardClubStats from '../components/cards/CardClubStats'
 import CardClubsPoints from '../components/cards/CardClubsPoints'
 import unique from '../utils/unique'
 import CardClubsAthletes from '../components/cards/CardClubsAthletes'
 import CardClubsRatio from '../components/cards/CardClubsRatio'
+import ExpandMoreIcon from '../components/ExpandMoreIcon'
 
 // ----------------------------------------------------------------------
 export interface Ranking {
@@ -106,7 +108,13 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
   const [weaponFilter, setWeaponFilter] = React.useState<string[]>([])
   const [genderFilter, setGenderFilter] = React.useState<string[]>([])
   const [categoryFilter] = React.useState<string[]>(categories)
+  const [provinceFilter, setProvinceFilter] = React.useState<IProvince[]>([])
   const [filter, setFilter] = React.useState<Array<{ category: string, weapon: string, gender: string }>>([])
+  const [expanded, setExpanded] = React.useState(false)
+
+  const handleExpandClick = (): void => {
+    setExpanded(!expanded)
+  }
 
   // Charts data
   const [chartsData, setChartsData] = React.useState<{ athletes: ChartsData[], uniqueAthletes: ChartsData[], clubs: any }>({ athletes: [], uniqueAthletes: [], clubs: [] })
@@ -156,15 +164,19 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
     rankingData.forEach((item) => {
       item.data.gender.name = item.data.gender.name.trim().toLowerCase()
       item.data.weapon.name = item.data.weapon.name.trim().toLowerCase()
-      listAthletes = listAthletes.concat(item.data.rows.map((row) => {
-        return {
-          ...row.athlete,
-          gender: item.data.gender.name,
-          weapon: item.data.weapon.name,
-          club: row.club.code_letter,
-          points: row.total_points
+      listAthletes = listAthletes.concat(item.data.rows.reduce((previousValue: ChartsData[], currentValue: Row) => {
+        // Filter by province
+        if (provinceFilter.length === 0 || provinceFilter.some((province) => currentValue.club.code_letter.startsWith(province.sigla_prov))) {
+          return [...previousValue, {
+            ...currentValue.athlete,
+            gender: item.data.gender.name,
+            weapon: item.data.weapon.name,
+            club: currentValue.club.code_letter,
+            points: currentValue.total_points
+          }]
         }
-      }))
+        return previousValue
+      }, []))
     })
 
     const listUniqueAthletes = unique(listAthletes, 'fis_code')
@@ -212,7 +224,7 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
         clubs: listClubsStats
       }
     )
-  }, [rankingData])
+  }, [provinceFilter, rankingData])
 
   return (
         <Box sx={{ flexGrow: 1 }}>
@@ -242,6 +254,62 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
                     />
                 </Grid>
             </Grid>
+            <Grid container spacing={2}>
+              <Grid xs={12}>
+                <Button
+                  onClick={handleExpandClick}
+                  aria-expanded={expanded}
+                  aria-label="show more"
+                  >
+                    Filtri aggiuntivi
+                  <ExpandMoreIcon
+                  expand={expanded}
+                  />
+                  </Button>
+              </Grid>
+              <Grid xs={12}>
+                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                  <Grid container spacing={2}>
+                    <Grid xs={12} md={6}>
+                      <Autocomplete
+                        multiple
+                        id="tags-outlined"
+                        options={unique(province, 'regione').sort((a, b) => -b.regione.localeCompare(a.regione))}
+                        getOptionLabel={(option: IProvince) => option.regione}
+                        filterSelectedOptions
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Seleziona la regione"
+                            placeholder="Regioni"
+                            sx={{ minWidth: '25ch' }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid xs={12} md={6}>
+                      <Autocomplete
+                        multiple
+                        id="tags-outlined"
+                        options={province.sort((a, b) => -b.provincia.localeCompare(a.provincia))}
+                        getOptionLabel={(option: IProvince) => option.provincia}
+                        filterSelectedOptions
+                        onChange={(event, value) => { setProvinceFilter(value) }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Seleziona la provincia"
+                            placeholder="Province"
+                            sx={{ minWidth: '25ch' }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                </Collapse>
+              </Grid>
+
+            </Grid>
             {/* Rankings section */}
             <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
                 Ranking
@@ -251,7 +319,7 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
                     filter.map((item): JSX.Element => {
                       return (
                         <Grid xs={12} md={6} xl={3} key={`${item.weapon}_${item.gender}`}>
-                            <CardPodium weapon={weapons[item.weapon]} gender={genders[item.gender]} setRankingData={setRankingData} />
+                            <CardPodium weapon={weapons[item.weapon]} gender={genders[item.gender]} setRankingData={setRankingData} filterProv={provinceFilter.map(p => p.sigla_prov)} />
                         </Grid>
                       )
                     })
