@@ -274,8 +274,11 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
                       <Autocomplete
                         multiple
                         id="tags-outlined"
+                        limitTags={2}
                         options={unique(province, 'regione').sort((a, b) => -b.regione.localeCompare(a.regione))}
                         getOptionLabel={(option: IProvince) => option.regione}
+                        onChange={(event, value) => { setProvinceFilter(province.filter(prov => value.some(a => a.regione === prov.regione))) }}
+                        value={unique(provinceFilter, 'regione').filter(prov => provinceFilter.filter(p => prov.regione === p.regione).length === province.filter(p => prov.regione === p.regione).length)}
                         filterSelectedOptions
                         renderInput={(params) => (
                           <TextField
@@ -291,10 +294,12 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
                       <Autocomplete
                         multiple
                         id="tags-outlined"
+                        limitTags={2}
                         options={province.sort((a, b) => -b.provincia.localeCompare(a.provincia))}
                         getOptionLabel={(option: IProvince) => option.provincia}
                         filterSelectedOptions
                         onChange={(event, value) => { setProvinceFilter(value) }}
+                        value={provinceFilter}
                         renderInput={(params) => (
                           <TextField
                             {...params}
