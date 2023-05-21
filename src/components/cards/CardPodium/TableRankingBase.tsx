@@ -89,7 +89,7 @@ export default function TableRankingBase ({ data, isError, isLoading }: TablePro
                   </Stack>
                 <Stack spacing={0}>
                   <Typography variant='body2' sx={{ fontWeight: 'bold' }}>Club</Typography>
-                  <Typography variant='body2' sx={{ textTransform: 'capitalize' }}>{row.original.club.name.toLowerCase() ?? row.original.club.code_letter.toUpperCase()}</Typography>
+                  <Typography variant='body2' sx={{ textTransform: 'capitalize' }}>{row.original.club.name?.toLowerCase() ?? row.original.club.code_letter.toUpperCase()}</Typography>
                 </Stack>
               </Box>
           )}
