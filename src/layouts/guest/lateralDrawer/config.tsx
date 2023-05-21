@@ -61,19 +61,25 @@ const rankingConfig: ItemType[] = [
   },
   {
     title: 'Giovani',
-    path: '/dashboard/user',
+    path: '/rankings/giovani',
     icon: <EmojiEventsIcon></EmojiEventsIcon>,
     children: []
   },
   {
     title: 'Assoluti',
-    path: '/dashboard/user',
+    path: '/rankings/assoluti',
     icon: <EmojiEventsIcon></EmojiEventsIcon>,
     children: []
   },
   {
     title: 'Master',
-    path: '/dashboard/user',
+    path: '/rankings/master',
+    icon: <EmojiEventsIcon></EmojiEventsIcon>,
+    children: []
+  },
+  {
+    title: 'Paralimpico',
+    path: '/rankings/paralimpico',
     icon: <EmojiEventsIcon></EmojiEventsIcon>,
     children: []
   }

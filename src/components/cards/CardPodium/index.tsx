@@ -24,8 +24,7 @@ interface ExpandMoreProps extends IconButtonProps {
 }
 
 interface CardPodiumProps {
-  weapon: string
-  gender: string
+  filter: { gender: string, weapon: string, category: string }
   filterProv: string[]
   setRankingData: React.Dispatch<React.SetStateAction<Ranking[]>>
 }
@@ -61,7 +60,7 @@ const StyledPodiumBase = styled(Paper)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function CardPodium ({ weapon, gender, setRankingData, filterProv }: CardPodiumProps): JSX.Element {
+export default function CardPodium ({ filter, setRankingData, filterProv }: CardPodiumProps): JSX.Element {
   const [expanded, setExpanded] = React.useState(false)
   const [dataTable, setDataTable] = React.useState<Ranking | undefined>(undefined)
 
@@ -73,11 +72,12 @@ export default function CardPodium ({ weapon, gender, setRankingData, filterProv
         useQuery<Ranking>({
           queryKey: [
             'table-data',
-            weapon,
-            gender
+            filter.category,
+            filter.weapon,
+            filter.gender
           ],
           queryFn: async () => {
-            return await getRanking(`/giovani/${weapon}/${gender}`) as Ranking
+            return await getRanking(`/${filter.category}/${filter.weapon}/${filter.gender}`) as Ranking
           },
           keepPreviousData: true
         })
@@ -108,7 +108,7 @@ export default function CardPodium ({ weapon, gender, setRankingData, filterProv
         <Card>
             <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                  {firstLetterCapitalize(`${weapon} ${gender}`)}
+                  {firstLetterCapitalize(`${filter.weapon} ${filter.gender}`)}
                 </Typography>
                 <Grid container alignItems='stretch' textAlign='center'>
                     <Grid xs={4} sx={{ mt: '16px' }}>

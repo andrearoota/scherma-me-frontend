@@ -18,6 +18,7 @@ import unique from '../utils/unique'
 import CardClubsAthletes from '../components/cards/CardClubsAthletes'
 import CardClubsRatio from '../components/cards/CardClubsRatio'
 import ExpandMoreIcon from '../components/ExpandMoreIcon'
+import { useParams, useSearchParams } from 'react-router-dom'
 
 // ----------------------------------------------------------------------
 export interface Ranking {
@@ -74,10 +75,6 @@ export interface Row {
   club: Club
 }
 
-interface RankingPageProps {
-  categories: string[]
-}
-
 export interface ChartsData extends Athlete {
   gender: string
   weapon: string
@@ -100,14 +97,18 @@ export const genders: Record<string, string> = {
 
 // ----------------------------------------------------------------------
 
-export default function RankingPage ({ categories }: RankingPageProps): JSX.Element {
+export default function RankingPage (): JSX.Element {
+  // Constants
+  // eslint-disable-next-line prefer-const
+  let { category } = useParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+
   // Data
   const [rankingData, setRankingData] = React.useState<Ranking[]>([])
 
   // Filters
   const [weaponFilter, setWeaponFilter] = React.useState<string[]>([])
   const [genderFilter, setGenderFilter] = React.useState<string[]>([])
-  const [categoryFilter] = React.useState<string[]>(categories)
   const [provinceFilter, setProvinceFilter] = React.useState<IProvince[]>([])
   const [filter, setFilter] = React.useState<Array<{ category: string, weapon: string, gender: string }>>([])
   const [expanded, setExpanded] = React.useState(false)
@@ -134,7 +135,7 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
         }
 
         newFilter.push({
-          category: categoryFilter[0],
+          category: category ?? '',
           weapon,
           gender
         })
@@ -145,17 +146,19 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
     const activeData: Ranking[] = []
 
     rankingData.forEach((ranking) => {
-      if (newFilter.some(item => item.gender === ranking.data.gender.id.trim().toLowerCase() && item.weapon === ranking.data.weapon.id.trim().toLowerCase())) {
+      if (isActiveRanking(ranking, newFilter)) {
         activeData.push(ranking)
       }
     })
 
     setRankingData(activeData)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [weaponFilter, genderFilter])
+  }, [weaponFilter, genderFilter, category])
 
   React.useEffect(() => {
-    if (rankingData.length === 0) {
+    const allDataIsUpdated = rankingData.filter(ranking => isActiveRanking(ranking, filter))
+
+    if (rankingData.length === 0 || allDataIsUpdated.length !== rankingData.length) {
       setChartsData({ athletes: [], uniqueAthletes: [], clubs: [] })
       return undefined
     }
@@ -224,6 +227,7 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
         clubs: listClubsStats
       }
     )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provinceFilter, rankingData])
 
   return (
@@ -270,7 +274,7 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
               <Grid xs={12}>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                   <Grid container spacing={2}>
-                    <Grid xs={12} md={6}>
+                    <Grid xs={12} md={4}>
                       <Autocomplete
                         multiple
                         id="tags-outlined"
@@ -290,7 +294,7 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
                         )}
                       />
                     </Grid>
-                    <Grid xs={12} md={6}>
+                    <Grid xs={12} md={4}>
                       <Autocomplete
                         multiple
                         id="tags-outlined"
@@ -318,13 +322,19 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
             {/* Rankings section */}
             <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
                 Ranking
-              </Typography>
+            </Typography>
             <Grid container spacing={2}>
                 {
                     filter.map((item): JSX.Element => {
+                      const filter = {
+                        weapon: weapons[item.weapon],
+                        gender: genders[item.gender],
+                        category: item.category
+                      }
+
                       return (
                         <Grid xs={12} md={6} xl={3} key={`${item.weapon}_${item.gender}`}>
-                            <CardPodium weapon={weapons[item.weapon]} gender={genders[item.gender]} setRankingData={setRankingData} filterProv={provinceFilter.map(p => p.sigla_prov)} />
+                            <CardPodium filter={filter} setRankingData={setRankingData} filterProv={provinceFilter.map(p => p.sigla_prov)} />
                         </Grid>
                       )
                     })
@@ -333,27 +343,41 @@ export default function RankingPage ({ categories }: RankingPageProps): JSX.Elem
             {/* Stats section */}
             <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
                 Statistiche
-              </Typography>
+            </Typography>
             <Grid container spacing={2}>
-              <Grid xs={12} md={6} xl={3}>
+              <Grid xs={12} md={6} xl>
                 <CardGenderStats chartData={chartsData.uniqueAthletes} tableData={chartsData.clubs} />
               </Grid>
-              <Grid xs={12} md={6} xl={3}>
+              <Grid xs={12} md={6} xl>
                 <CardWeaponStats chartData={chartsData.athletes} tableData={chartsData.clubs} />
               </Grid>
-              <Grid xs={12} md={6} xl={3}>
+              <Grid xs={12} md={6} xl>
                 <CardClubStats chartData={chartsData.athletes} />
               </Grid>
-              <Grid xs={12} md={6} xl={3}>
+            </Grid>
+
+            <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
+                Classifiche club
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid xs={12} md={6} xl>
                 <CardClubsPoints tableData={chartsData.clubs} />
               </Grid>
-              <Grid xs={12} md={6} xl={3}>
+              <Grid xs={12} md={6} xl>
                 <CardClubsAthletes tableData={chartsData.clubs} />
               </Grid>
-              <Grid xs={12} md={6} xl={3}>
+              <Grid xs={12} md={6} xl>
                 <CardClubsRatio tableData={chartsData.clubs} />
               </Grid>
             </Grid>
         </Box>
+  )
+}
+
+function isActiveRanking (ranking: Ranking, filter: Array<{ category: string, weapon: string, gender: string }>): boolean {
+  return filter.some(item => (
+    item.gender === ranking.data.gender.id.trim().toLowerCase() &&
+      item.weapon === ranking.data.weapon.id.trim().toLowerCase() &&
+      item.category === ranking.data.category.name.trim().toLowerCase())
   )
 }
