@@ -107,8 +107,8 @@ export default function RankingPage (): JSX.Element {
   const [rankingData, setRankingData] = React.useState<Ranking[]>([])
 
   // Filters
-  const [weaponFilter, setWeaponFilter] = React.useState<string[]>([])
-  const [genderFilter, setGenderFilter] = React.useState<string[]>([])
+  const [weaponFilter, setWeaponFilter] = React.useState<string[]>(searchParams.get('weapons')?.split(',') ?? [])
+  const [genderFilter, setGenderFilter] = React.useState<string[]>(searchParams.get('genders')?.split(',') ?? [])
   const [provinceFilter, setProvinceFilter] = React.useState<IProvince[]>([])
   const [filter, setFilter] = React.useState<Array<{ category: string, weapon: string, gender: string }>>([])
   const [expanded, setExpanded] = React.useState(false)
@@ -142,6 +142,16 @@ export default function RankingPage (): JSX.Element {
       })
     })
     setFilter(newFilter)
+
+    const searchParams: { weapons?: string, genders?: string } = {}
+    if (weaponFilter.length > 0) {
+      searchParams.weapons = weaponFilter.join(',')
+    }
+    if (genderFilter.length > 0) {
+      searchParams.genders = genderFilter.join(',')
+    }
+
+    setSearchParams(searchParams)
 
     const activeData: Ranking[] = []
 
