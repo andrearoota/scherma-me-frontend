@@ -11,8 +11,8 @@ import TableRankingBase from './TableRankingBase'
 
 import * as React from 'react'
 
-import { Card, CardContent, CardActions, Typography, Button, Collapse, IconButton, type IconButtonProps, Skeleton, Snackbar, Alert, Paper } from '@mui/material'
-import { type Row, type Ranking } from '../../../pages/RankingPage'
+import { Card, CardContent, CardActions, Typography, Button, Collapse, IconButton, type IconButtonProps, Skeleton, Snackbar, Alert, Paper, Chip, Box } from '@mui/material'
+import { type Row, type Ranking, type Category } from '../../../pages/RankingPage'
 import { useQuery } from '@tanstack/react-query'
 import { getRanking } from '../../../api/ranking'
 import { firstLetterCapitalize } from '../../../utils/stringFormatter'
@@ -24,7 +24,7 @@ interface ExpandMoreProps extends IconButtonProps {
 }
 
 interface CardPodiumProps {
-  filter: { gender: string, weapon: string, category: string }
+  filter: { gender: string, weapon: string, category: Category }
   filterProv: string[]
   setRankingData: React.Dispatch<React.SetStateAction<Ranking[]>>
 }
@@ -72,12 +72,12 @@ export default function CardPodium ({ filter, setRankingData, filterProv }: Card
         useQuery<Ranking>({
           queryKey: [
             'table-data',
-            filter.category,
+            filter.category.name,
             filter.weapon,
             filter.gender
           ],
           queryFn: async () => {
-            return await getRanking(`/${filter.category}/${filter.weapon}/${filter.gender}`) as Ranking
+            return await getRanking(`/${filter.category.name}/${filter.weapon}/${filter.gender}`) as Ranking
           },
           keepPreviousData: true
         })
@@ -107,9 +107,12 @@ export default function CardPodium ({ filter, setRankingData, filterProv }: Card
   return (
         <Card>
             <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {firstLetterCapitalize(`${filter.weapon} ${filter.gender}`)}
-                </Typography>
+                <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} paddingBottom={1}>
+                  <Typography variant="h5">
+                    {firstLetterCapitalize(`${filter.weapon} ${filter.gender}`)}
+                  </Typography>
+                  <Chip label={dataTable?.data.category.name} size="small" />
+                </Box>
                 <Grid container alignItems='stretch' textAlign='center'>
                     <Grid xs={4} sx={{ mt: '16px' }}>
                       <StyledPodiumBase elevation={8}>

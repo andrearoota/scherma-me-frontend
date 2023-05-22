@@ -37,8 +37,8 @@ export interface Ranking {
 export interface Category {
   id: number
   name: string
-  start_year: number
-  end_year: number
+  start_year?: number
+  end_year?: number
 }
 
 export interface Gender {
@@ -110,7 +110,7 @@ export default function RankingPage (): JSX.Element {
   const [weaponFilter, setWeaponFilter] = React.useState<string[]>(searchParams.get('weapons')?.split(',') ?? [])
   const [genderFilter, setGenderFilter] = React.useState<string[]>(searchParams.get('genders')?.split(',') ?? [])
   const [provinceFilter, setProvinceFilter] = React.useState<IProvince[]>([])
-  const [filter, setFilter] = React.useState<Array<{ category: string, weapon: string, gender: string }>>([])
+  const [filter, setFilter] = React.useState<Array<{ category: Category, weapon: string, gender: string }>>([])
   const [expanded, setExpanded] = React.useState(false)
 
   const handleExpandClick = (): void => {
@@ -121,7 +121,7 @@ export default function RankingPage (): JSX.Element {
   const [chartsData, setChartsData] = React.useState<{ athletes: ChartsData[], uniqueAthletes: ChartsData[], clubs: any }>({ athletes: [], uniqueAthletes: [], clubs: [] })
 
   React.useEffect(() => {
-    const newFilter: Array<{ category: string, weapon: string, gender: string }> = []
+    const newFilter: Array<{ category: Category, weapon: string, gender: string }> = []
     weaponFilter.forEach((weapon: string) => {
       weapon = weapon.toLowerCase()
       if (weapon === 'all') {
@@ -134,10 +134,35 @@ export default function RankingPage (): JSX.Element {
           return undefined
         }
 
-        newFilter.push({
-          category: category ?? '',
-          weapon,
-          gender
+        let categoryList: Category[] = []
+
+        switch (category) {
+          case 'assoluti':
+            categoryList = [{ name: category, id: 1 }]
+            break
+          case 'cadetti':
+            categoryList = [{ name: category, id: 3 }]
+            break
+          case 'giovani':
+            categoryList = [{ name: category, id: 2 }]
+            break
+          case 'under14':
+            categoryList = [{ name: 'bambine', id: 4 }, { name: 'giovanissime', id: 5 }, { name: 'ragazze', id: 6 }, { name: 'allieve', id: 7 }, { name: 'ragazze+allieve', id: 8 }]
+            break
+          case 'master':
+            categoryList = [{ name: 'Master cat. 0', id: 9 }, { name: 'Master cat. 1', id: 10 }, { name: 'Master cat. 2', id: 11 }, { name: 'Master cat. 3', id: 12 }]
+            break
+          case 'paralimpico':
+            categoryList = [{ name: 'Paralimpico cat. A', id: 15 }, { name: 'Paralimpico cat. B', id: 16 }, { name: 'Paralimpico cat. C', id: 17 }]
+            break
+        }
+
+        categoryList.forEach(category => {
+          newFilter.push({
+            category,
+            weapon,
+            gender
+          })
         })
       })
     })
@@ -343,7 +368,7 @@ export default function RankingPage (): JSX.Element {
                       }
 
                       return (
-                        <Grid xs={12} md={6} xl={3} key={`${item.weapon}_${item.gender}`}>
+                        <Grid xs={12} md={6} xl={3} key={`${item.category.name}_${item.weapon}_${item.gender}`}>
                             <CardPodium filter={filter} setRankingData={setRankingData} filterProv={provinceFilter.map(p => p.sigla_prov)} />
                         </Grid>
                       )
@@ -384,10 +409,10 @@ export default function RankingPage (): JSX.Element {
   )
 }
 
-function isActiveRanking (ranking: Ranking, filter: Array<{ category: string, weapon: string, gender: string }>): boolean {
+function isActiveRanking (ranking: Ranking, filter: Array<{ category: Category, weapon: string, gender: string }>): boolean {
   return filter.some(item => (
     item.gender === ranking.data.gender.id.trim().toLowerCase() &&
       item.weapon === ranking.data.weapon.id.trim().toLowerCase() &&
-      item.category === ranking.data.category.name.trim().toLowerCase())
+      item.category.id === ranking.data.category.id)
   )
 }
