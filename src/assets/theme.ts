@@ -17,7 +17,7 @@ export const themeOptions = responsiveFontSizes(createTheme({
       default: '#fbfcfe'
     }
   },
-  typography: {
+  /* typography: {
     h1: {
       fontFamily: 'Readex Pro'
     },
@@ -36,6 +36,8 @@ export const themeOptions = responsiveFontSizes(createTheme({
     h6: {
       fontFamily: 'Readex Pro'
     }
+  }, */typography: {
+    fontFamily: 'Montserrat'
   },
   shape: {
     borderRadius: 25

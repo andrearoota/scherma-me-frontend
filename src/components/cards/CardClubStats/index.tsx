@@ -3,7 +3,7 @@ import { Card, CardContent, Grid, Stack, Typography } from '@mui/material'
 
 // Echarts
 import { GaugeEchart, type EChartsOption } from '../../echartsComponent/GaugeEchart'
-import { weapons, type ChartsData } from '../../../pages/RankingPage'
+import { weapons, type ChartsData } from '../../../pages/RankingGeneralPage'
 import CircleIcon from '@mui/icons-material/Circle'
 import { styled } from '@mui/material/styles'
 import { themeEcharts } from '../../../assets/themeEcharts'

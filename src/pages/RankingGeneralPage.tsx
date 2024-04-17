@@ -7,18 +7,13 @@ import Box from '@mui/material/Box'
 // Components
 import CardPodium from '../components/cards/CardPodium'
 import CheckboxChip from '../components/CheckboxChip'
-import CardGenderStats from '../components/cards/CardGenderStats'
 import { type IProvince, province } from '../assets/itProvReg'
 
-import CardWeaponStats from '../components/cards/CardWeaponStats'
 import { Autocomplete, Button, Collapse, Divider, TextField, Typography } from '@mui/material'
-import CardClubStats from '../components/cards/CardClubStats'
-import CardClubsPoints from '../components/cards/CardClubsPoints'
 import unique from '../utils/unique'
-import CardClubsAthletes from '../components/cards/CardClubsAthletes'
-import CardClubsRatio from '../components/cards/CardClubsRatio'
 import ExpandMoreIcon from '../components/ExpandMoreIcon'
 import { useParams, useSearchParams } from 'react-router-dom'
+import StatsRankingSection from '../sections/guest/statsRanking'
 
 // ----------------------------------------------------------------------
 export interface Ranking {
@@ -97,7 +92,7 @@ export const genders: Record<string, string> = {
 
 // ----------------------------------------------------------------------
 
-export default function RankingPage (): JSX.Element {
+export default function RankingGeneralPage (): JSX.Element {
   // Constants
   // eslint-disable-next-line prefer-const
   let { category } = useParams()
@@ -376,35 +371,7 @@ export default function RankingPage (): JSX.Element {
                 }
             </Grid>
             {/* Stats section */}
-            <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
-                Statistiche
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid xs={12} md={6} xl>
-                <CardGenderStats chartData={chartsData.uniqueAthletes} tableData={chartsData.clubs} />
-              </Grid>
-              <Grid xs={12} md={6} xl>
-                <CardWeaponStats chartData={chartsData.athletes} tableData={chartsData.clubs} />
-              </Grid>
-              <Grid xs={12} md={6} xl>
-                <CardClubStats chartData={chartsData.athletes} />
-              </Grid>
-            </Grid>
-
-            <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
-                Classifiche club
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid xs={12} md={6} xl>
-                <CardClubsPoints tableData={chartsData.clubs} />
-              </Grid>
-              <Grid xs={12} md={6} xl>
-                <CardClubsAthletes tableData={chartsData.clubs} />
-              </Grid>
-              <Grid xs={12} md={6} xl>
-                <CardClubsRatio tableData={chartsData.clubs} />
-              </Grid>
-            </Grid>
+            <StatsRankingSection athletes={chartsData.athletes} uniqueAthletes={chartsData.uniqueAthletes} clubs={chartsData.clubs}/>
         </Box>
   )
 }

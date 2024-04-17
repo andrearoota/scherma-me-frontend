@@ -5,7 +5,10 @@ import GuestLayout from './layouts/guest/GuestLayout'
 
 // pages
 import Homepage from './pages/Homepage'
-import Ranking from './pages/RankingPage'
+import RankingGeneralPage from './pages/RankingGeneralPage'
+import RankingSinglePage from './pages/RankingSinglePage'
+import TestAthlete from './pages/TestAthlete'
+import TestCalendar from './pages/TestCalendar'
 
 // ----------------------------------------------------------------------
 
@@ -16,11 +19,20 @@ export default function Router (): React.ReactElement<any, string | React.JSXEle
       element: <GuestLayout />,
       children: [
         { path: '/', element: <Homepage /> },
-        { path: '/rankings/:category', element: <Ranking /> }
+        { path: '/rankings/:category', element: <RankingGeneralPage /> },
+        { path: '/rankings/:category/:weapon/:gender/:id?', element: <RankingSinglePage /> }
         /* { path: 'user', element: <UserPage /> },
               { path: 'products', element: <ProductsPage /> },
               { path: 'blog', element: <BlogPage /> }, */
       ]
+    },
+    {
+      path: '/athlete',
+      element: <TestAthlete />
+    },
+    {
+      path: '/calendar',
+      element: <TestCalendar />
     }
     /* {
           path: 'login',

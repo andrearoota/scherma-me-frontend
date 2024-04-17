@@ -3,7 +3,7 @@ import { Button, Card, CardActions, CardContent, Collapse, Grid, Stack, Typograp
 
 // Echarts
 import { PieEchart, type EChartsOption } from '../../echartsComponent/PieEchart'
-import { genders, type ChartsData } from '../../../pages/RankingPage'
+import { genders, type ChartsData } from '../../../pages/RankingGeneralPage'
 import formatNumber from '../../../utils/formatNumber'
 import CircleIcon from '@mui/icons-material/Circle'
 import { styled } from '@mui/material/styles'

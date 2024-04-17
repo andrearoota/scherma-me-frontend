@@ -13,6 +13,7 @@ import { MRT_Localization_IT } from 'material-react-table/locales/it'
 
 import formatNumber from '../../../utils/formatNumber'
 import { type Row, type Ranking } from '../../../pages/RankingGeneralPage'
+import useResponsive from '../../../hooks/useResponsive'
 
 // ---------------------------------------------
 
@@ -26,11 +27,15 @@ interface TableProps {
 
 export default function TableRankingBase ({ data, isError, isLoading }: TableProps): JSX.Element {
   const theme = useTheme()
-  const columns = useMemo<Array<MRT_ColumnDef<Row>>>(
+
+  const isDesktop = useResponsive('up', 'lg')
+
+  const columnsMobile = useMemo<Array<MRT_ColumnDef<Row>>>(
     () => [
       {
         accessorKey: 'position',
-        header: 'Pos',
+        header: '#',
+        maxSize: 50,
         muiTableBodyCellProps: {
           align: 'center'
         }
@@ -55,23 +60,69 @@ export default function TableRankingBase ({ data, isError, isLoading }: TablePro
     []
   )
 
+  const columnsDesktop = useMemo<Array<MRT_ColumnDef<Row>>>(
+    () => [
+      {
+        accessorKey: 'position',
+        header: '#',
+        maxSize: 50
+        /*         muiTableBodyCellProps: {
+          align: 'center'
+        }
+ */ },
+      {
+        accessorKey: 'athlete.full_name',
+        header: 'Nome'
+      },
+      {
+        accessorKey: 'athlete.birth_year',
+        header: 'Anno'
+      },
+      {
+        accessorKey: 'athlete.fis_code',
+        header: 'FIS'
+      },
+      {
+        accessorFn: (row) => formatNumber(row.total_points),
+        header: 'Punti'/* ,
+        muiTableBodyCellProps: {
+          align: 'right'
+        } */
+      },
+      {
+        header: 'Club',
+        accessorKey: 'club.code_letter',
+        enableHiding: true
+      }
+    ],
+    []
+  )
+
   return (
         <MaterialReactTable
-          columns={columns}
+          columns={isDesktop ? columnsDesktop : columnsMobile}
           data={data?.data.rows ?? []} // data is undefined on first render
           localization={MRT_Localization_IT}
-          enableColumnActions={false}
-          enableFullScreenToggle={false}
-          enableDensityToggle={false}
-          enableSorting={false}
-          enableHiding={false}
-          enableColumnFilters={false}
-          enableExpanding={true}
-          enableExpandAll={true}
-          state={{ density: 'compact', isLoading }}
+          enableColumnActions={true}
+          enableFullScreenToggle={true}
+          enableDensityToggle={true}
+          enableSorting={true}
+          enableHiding={true}
+          enableColumnFilters={true}
+          enableExpanding={!isDesktop}
+          enableExpandAll={false}
+          enableStickyHeader={true}
+          enablePagination={false}
+          enableRowVirtualization={true}
+          enableColumnResizing={false}
+          layoutMode="grid"
+          state={{ isLoading }}
+          initialState={{ density: 'compact', sorting: [{ id: 'position', desc: false }] }}
           rowCount={data?.data.rows.length ?? 0} // Not get lenght from api because get all data
           renderDetailPanel={({ row }) => (
-              <Box
+            isDesktop
+              ? false
+              : <Box
                   sx={{
                     display: 'grid',
                     margin: 'auto',
@@ -94,13 +145,12 @@ export default function TableRankingBase ({ data, isError, isLoading }: TablePro
               </Box>
           )}
           defaultColumn={{
-            minSize: 20, // allow columns to get smaller than default
-            maxSize: 100, // allow columns to get larger than default
-            size: 0 // make columns wider by default
+            minSize: 0 // allow columns to get smaller than default
           }}
-          muiTableProps={{
+          muiTableContainerProps={{
             sx: {
-              tableLayout: 'auto'
+              minHeight: '30rem',
+              height: '50vh'
             }
           }}
           muiToolbarAlertBannerProps={
@@ -139,31 +189,16 @@ export default function TableRankingBase ({ data, isError, isLoading }: TablePro
               color: theme.palette.primary.main
             }
           }}
-          muiTablePaginationProps={{
-            rowsPerPageOptions: [10]
-          }}
-          muiTableHeadCellProps={{
-            align: 'center'
-          }}
-          displayColumnDefOptions={{
-            'mrt-row-expand': {
-              size: 0,
-              muiTableBodyCellProps: {
-                align: 'center',
-                sx: {
-                  padding: 0,
-                  paddingLeft: 0 // necessary for extra css
-                }
-              },
-              muiTableHeadCellProps: {
-                align: 'center',
-                sx: {
-                  padding: 0
-                }
-              }
-
+          /* muiTableHeadCellProps={{
+            align: 'center',
+            sx: {
+              flex: '0 0 auto'
             }
-          }}
+          }} muiTableBodyCellProps={{
+            sx: {
+              flex: '0 0 auto'
+            }
+          }} */
         />
   )
 };

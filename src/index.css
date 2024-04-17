@@ -3,3 +3,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.MuiChip-filledPrimary {
+  background-color: #182983!important;
+}
+
+.MuiChip-outlinedPrimary {
+  border-color: #182983!important;
+}

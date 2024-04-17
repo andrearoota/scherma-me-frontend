@@ -5,42 +5,28 @@ import Grid from '@mui/material/Unstable_Grid2'
 import LooksOneIcon from '@mui/icons-material/LooksOne'
 import LooksTwoIcon from '@mui/icons-material/LooksTwo'
 import Looks3Icon from '@mui/icons-material/Looks3'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
-import TableRankingBase from './TableRankingBase'
+import TableRankingExtended from './TableRankingExtended'
 
 import * as React from 'react'
 
-import { Card, CardContent, CardActions, Typography, Button, Collapse, IconButton, type IconButtonProps, Skeleton, Snackbar, Alert, Paper, Chip, Box } from '@mui/material'
+import { Card, CardContent, Typography, Skeleton, Snackbar, Alert, Paper, Chip, Box } from '@mui/material'
 import { type Row, type Ranking, type Category } from '../../../pages/RankingGeneralPage'
 import { useQuery } from '@tanstack/react-query'
 import { getRanking } from '../../../api/ranking'
 import { firstLetterCapitalize } from '../../../utils/stringFormatter'
+import { type ListRankingsAPI } from '../../../pages/RankingSinglePage'
 
 // ----------------------------------------------------------------------
-
-interface ExpandMoreProps extends IconButtonProps {
-  expand: boolean
-}
 
 interface CardPodiumProps {
   filter: { gender: string, weapon: string, category: Category }
   filterProv: string[]
+  filterRanking: ListRankingsAPI
   setRankingData: React.Dispatch<React.SetStateAction<Ranking[]>>
 }
 
 // ----------------------------------------------------------------------
-
-const ExpandMore = styled((props: ExpandMoreProps) => {
-  const { expand, ...other } = props
-  return <IconButton {...other} />
-})(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest
-  })
-}))
 
 const StyledPodiumName = styled(Typography)(({ theme }) => ({
   textTransform: 'capitalize',
@@ -60,34 +46,29 @@ const StyledPodiumBase = styled(Paper)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function CardPodium ({ filter, setRankingData, filterProv }: CardPodiumProps): JSX.Element {
-  const [expanded, setExpanded] = React.useState(false)
+export default function CardPodiumExtended ({ filter, setRankingData, filterProv, filterRanking }: CardPodiumProps): JSX.Element {
   const [dataTable, setDataTable] = React.useState<Ranking | undefined>(undefined)
-
-  const handleExpandClick = (): void => {
-    setExpanded(!expanded)
-  }
 
   const { data, isError, isLoading } =
         useQuery<Ranking>({
           queryKey: [
             'table-data',
+            filterRanking,
             filter.category.name,
             filter.weapon,
             filter.gender
           ],
           queryFn: async () => {
-            return await getRanking(`/${filter.category.name}/${filter.weapon}/${filter.gender}/latest`) as Ranking
+            let url = `/${filter.category.name}/${filter.weapon}/${filter.gender}`
+            url = filterRanking.date === '' ? `${url}/latest` : `${url}/${filterRanking.id}`
+            return await getRanking(url) as Ranking
           },
           keepPreviousData: true
         })
 
   React.useEffect(() => {
     if (!isError && !isLoading) {
-      setRankingData((prev) => {
-        return prev.some(item => item.data.id === data?.data.id) ? prev : [...prev, data]
-      }
-      )
+      setRankingData([data])
 
       const newData = JSON.parse(JSON.stringify(data))
 
@@ -145,23 +126,10 @@ export default function CardPodium ({ filter, setRankingData, filterProv }: Card
                       </StyledPodiumBase>
                     </Grid>
                 </Grid>
+                <Box paddingTop={2}>
+                  <TableRankingExtended data={dataTable} isError={isError} isLoading={isLoading} />
+                </Box>
             </CardContent>
-            <CardActions sx={{ justifyContent: 'space-between' }}>
-                <Button variant='outlined' href={`../rankings/${dataTable?.data.category.name.replaceAll(' ', '').replaceAll('/', '-').toLowerCase() ?? ''}/${dataTable?.data.weapon.name ?? ''}/${dataTable?.data.gender.name ?? ''}/latest`}>Approfondisci</Button>
-                <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                >
-                    <ExpandMoreIcon />
-                </ExpandMore>
-            </CardActions>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-                <CardContent>
-                    <TableRankingBase data={dataTable} isError={isError} isLoading={isLoading} />
-                </CardContent>
-            </Collapse>
             <Snackbar open={isError} autoHideDuration={5000} message={'Errore nel caricamento dei dati!'} key={'bottomcenter'} sx={{ borderRadius: '5px' }}>
                 <Alert severity="error" sx={{ borderRadius: '5px' }}>Errore nel caricamento dei dati!</Alert>
             </Snackbar>
