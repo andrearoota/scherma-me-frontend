@@ -2,6 +2,12 @@ import '@mantine/core/styles.css';
 
 import React from 'react';
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+
+import '@mantine/spotlight/styles.css'; // Import spotlight styles
+import '@mantine/charts/styles.css'; // Import charts styles
+import '@fontsource/readex-pro/300.css';
+import '@fontsource/readex-pro/500.css';
+
 import { theme } from '../theme';
 
 export const metadata = {
@@ -21,7 +27,9 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme} defaultColorScheme="auto">
+          {children}
+        </MantineProvider>
       </body>
     </html>
   );
