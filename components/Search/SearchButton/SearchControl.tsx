@@ -1,20 +1,20 @@
 import { IconSearch } from '@tabler/icons-react';
 import cx from 'clsx';
 import { BoxProps, ElementProps, Group, rem, Text, UnstyledButton } from '@mantine/core';
-import { spotlight } from '@mantine/spotlight';
-import { Search, searchHandlers } from '../Spotlight';
+import { Search } from '../Spotlight';
 import classes from './SearchControl.module.css';
+import { spotlight } from '@mantine/spotlight';
 
 interface SearchControlProps extends BoxProps, ElementProps<'button'> {}
 
-export function SearchHomeControl({ className, ...others }: SearchControlProps) {
+export function SearchControl({ className, ...others }: SearchControlProps) {
   return (
     <>
       <UnstyledButton
         {...others}
         className={cx(classes.root, className)}
         onClick={() => {
-          searchHandlers.open();
+          spotlight.open();
         }}
       >
         <Group gap="xs">

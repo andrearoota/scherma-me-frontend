@@ -19,7 +19,7 @@ export const theme = createTheme({
   fontFamily: 'Verdana, sans-serif',
   fontFamilyMonospace: 'Monaco, Courier, monospace',
   headings: { fontFamily: 'Readex Pro, sans-serif', fontWeight: '500' },
-
+  
   colors: {
     schermaMePrimary,
   },

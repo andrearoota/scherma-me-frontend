@@ -8,10 +8,13 @@ import '@mantine/charts/styles.css'; // Import charts styles
 import '@fontsource/readex-pro/300.css';
 import '@fontsource/readex-pro/500.css';
 
+import { Footer } from '@/components/Footer';
+import { Header } from '@/components/Header';
+import SWRProvider from '@/customContext/SWRProvider';
 import { theme } from '../theme';
 
 export const metadata = {
-  title: 'Mantine Next.js template',
+  title: 'Scherma.me',
   description: 'I am using Mantine with Next.js!',
 };
 
@@ -27,9 +30,13 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme} defaultColorScheme="auto">
-          {children}
-        </MantineProvider>
+        <SWRProvider>
+          <MantineProvider theme={theme} defaultColorScheme="auto">
+            <Header />
+            {children}
+            <Footer />
+          </MantineProvider>
+        </SWRProvider>
       </body>
     </html>
   );

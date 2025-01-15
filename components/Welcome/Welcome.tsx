@@ -1,118 +1,124 @@
 'use client';
 
-import { Container, Box, SimpleGrid, Text, Title, useMantineTheme } from '@mantine/core';
-import { CirclePackingDatum } from '../Charts/PackedBubbleChart';
-import { Header } from '../Header';
-import { PreviewRankCard } from '../PreviewRankCard';
-import { SearchHomeControl } from '../SearchControl/SearchHomeControl';
+import { useRouter } from 'next/navigation';
+import { IconArrowRight } from '@tabler/icons-react';
+import { Box, Button, Center, Container, Grid, Text, Title, useMantineTheme } from '@mantine/core';
+import { StatsApi } from '@/api';
+import { AthleteStatsCard } from '../Cards/AthleteStatsCard';
+import { BirthdaysCard } from '../Cards/BirthdaysCard';
+import { ClubStatsCard } from '../Cards/ClubStatsCard';
+import { MatchStatsCard } from '../Cards/MatchStatsCard';
+import { PointStatsCard } from '../Cards/PointStatsCard';
+import { SearchHomeControl } from '../Search/SearchButton/SearchHomeControl';
 import classes from './Welcome.module.css';
 
-const stats: CirclePackingDatum = {
-  name: 'weapons',
-  children: [
-    {
-      name: 'Fioretto',
-      loc: Math.floor(Math.random() * 1000),
-    },
-    {
-      name: 'Sciabola',
-      loc: Math.floor(Math.random() * 1000),
-    },
-    {
-      name: 'Spada',
-      loc: Math.floor(Math.random() * 1000),
-    },
-  ],
-};
-
-const PreviewRankCards = [
+const rankingItems = [
   {
     title: 'Under 14',
-    date: '12/12/2024',
-    total: 1887,
-    stats,
     route: '/ranking/under-14',
   },
   {
     title: 'Cadetti',
-    date: '12/12/2024',
-    total: 1887,
-    stats,
-    route: '/ranking/under-16',
+    route: '/ranking/cadetti',
   },
   {
     title: 'Giovani',
-    date: '12/12/2024',
-    total: 1887,
-    stats,
-    route: '/ranking/under-18',
+    route: '/ranking/giovani',
   },
   {
     title: 'Under 23',
-    date: '12/12/2024',
-    total: 1887,
-    stats,
-    route: '/ranking/under-20',
+    route: '/ranking/under-23',
   },
   {
     title: 'Assoluti',
-    date: '12/12/2024',
-    total: 1887,
-    stats,
-    route: '/ranking/senior',
+    route: '/ranking/assoluti',
   },
   {
     title: 'Master',
-    date: '12/12/2024',
-    total: 1887,
-    stats,
-    route: '/ranking/veterani',
+    route: '/ranking/master',
   },
   {
     title: 'Paralimpici',
-    date: '12/12/2024',
-    total: 1887,
-    stats,
-    route: '/ranking/veterani',
+    route: '/ranking/palalimpici',
   },
   {
     title: 'Non vedenti',
-    date: '12/12/2024',
-    total: 1887,
-    stats,
-    route: '/ranking/veterani',
-  }
+    route: '/ranking/non-vedenti',
+  },
 ];
 
 export function Welcome() {
   const theme = useMantineTheme();
+  const generalStats = StatsApi.useGeneralStats();
+  const router = useRouter();
 
-  const previewRankCards = PreviewRankCards.map((props, index) => (
-    <PreviewRankCard key={index} {...props} />
-  ));
   return (
-    <Container fluid>
-      <Header />
-      <Title className={classes.title} ta="center" mt={100}>
-        Quanto sei nel{' '}
-        <Text
-          inherit
-          variant="gradient"
-          component="span"
-          gradient={{
-            from: theme.colors.schermaMePrimary[6],
-            to: theme.colors.schermaMePrimary[9],
-          }}
-        >
-          ranking?
-        </Text>
-      </Title>
-      <Box ta="center" mt={20}>
-        <SearchHomeControl />
+    <>
+      <Box h="calc(100vh - 65px)" display="flex" style={{ flexDirection: 'column' }}>
+        <Center h="100%">
+          <div>
+            <Title className={classes.title} ta="center">
+              Quanto sei nel{' '}
+              <Text
+                inherit
+                variant="gradient"
+                component="span"
+                gradient={{
+                  from: theme.colors.schermaMePrimary[6],
+                  to: theme.colors.schermaMePrimary[9],
+                }}
+              >
+                ranking?
+              </Text>
+            </Title>
+            <Box ta="center" mt={20}>
+              <SearchHomeControl />
+            </Box>
+          </div>
+        </Center>
+        <Container fluid w="100%" my="md">
+          <Grid justify="center">
+            {rankingItems.map((props, index) => (
+              <Grid.Col span={{ base: 6, xs: 4, sm: 'auto' }} key={index}>
+                <Button
+                  fullWidth
+                  variant="gradient"
+                  size="lg"
+                  component="a"
+                  href={props.route}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    router.push(props.route);
+                  }}
+                  rightSection={<IconArrowRight size={14} />}
+                >
+                  {props.title}
+                </Button>
+              </Grid.Col>
+            ))}
+          </Grid>
+        </Container>
       </Box>
-      <SimpleGrid cols={{ base: 2, md: 4 }} mt={100}>
-        {previewRankCards}
-      </SimpleGrid>
-    </Container>
+
+      <Container fluid>
+        <Grid>
+          <Grid.Col span="auto">
+            <BirthdaysCard birthdays={generalStats.data?.birthdays || []} />
+          </Grid.Col>
+          <Grid.Col span="auto">
+            <ClubStatsCard stats={generalStats.data?.clubs || []} />
+          </Grid.Col>
+          <Grid.Col span="auto">
+            <AthleteStatsCard stats={generalStats.data?.athletes || []} />
+          </Grid.Col>
+          <Grid.Col span="auto">
+            <MatchStatsCard stats={generalStats.data?.matches} />
+          </Grid.Col>
+          <Grid.Col span="auto">
+            <PointStatsCard stats={generalStats.data?.points} />
+          </Grid.Col>
+        </Grid>
+      </Container>
+    </>
   );
 }

@@ -29,13 +29,11 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { spotlight } from '@mantine/spotlight';
 import LogoOnDark from '@/assets/logo/logoOnDark';
 import LogoOnLight from '@/assets/logo/logoOnLight';
 import ColorSchemeToggle from '../Buttons/ColorSchemeToggle';
-import { SearchControl } from '../SearchControl/SearchControl';
-import { SearchMobileControl } from '../SearchControl/SearchMobileControl';
-import { searchHandlers } from '../Spotlight';
+import { SearchControl } from '../Search/SearchButton/SearchControl';
+import { SearchMobileControl } from '../Search/SearchButton/SearchMobileControl';
 import classes from './index.module.css';
 
 const mockdata = [
@@ -106,7 +104,7 @@ export function Header() {
   ));
 
   return (
-    <Box pb={120}>
+    <Box>
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
           <a href="#">{isDark ? <LogoOnDark height={24} /> : <LogoOnLight height={24} />}</a>
