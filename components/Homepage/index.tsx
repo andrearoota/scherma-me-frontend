@@ -1,16 +1,16 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { IconArrowRight } from '@tabler/icons-react';
-import { Box, Button, Center, Container, Grid, Text, Title, useMantineTheme } from '@mantine/core';
+import { Box, Button, Center, Container, Grid, Text, Title } from '@mantine/core';
 import { StatsApi } from '@/api';
-import { AthleteStatsCard } from '../Cards/AthleteStatsCard';
-import { BirthdaysCard } from '../Cards/BirthdaysCard';
-import { ClubStatsCard } from '../Cards/ClubStatsCard';
-import { MatchStatsCard } from '../Cards/MatchStatsCard';
-import { PointStatsCard } from '../Cards/PointStatsCard';
 import { SearchHomeControl } from '../Search/SearchButton/SearchHomeControl';
-import classes from './Welcome.module.css';
+import { AthleteStatsCard } from './AthleteStatsCard';
+import { BirthdaysCard } from './BirthdaysCard';
+import { ClubStatsCard } from './ClubStatsCard';
+import { MatchStatsCard } from './MatchStatsCard';
+import { PointStatsCard } from './PointStatsCard';
+import classes from './index.module.css';
 
 const rankingItems = [
   {
@@ -39,7 +39,7 @@ const rankingItems = [
   },
   {
     title: 'Paralimpici',
-    route: '/ranking/palalimpici',
+    route: '/ranking/paralimpici',
   },
   {
     title: 'Non vedenti',
@@ -47,10 +47,8 @@ const rankingItems = [
   },
 ];
 
-export function Welcome() {
-  const theme = useMantineTheme();
+export function Homepage() {
   const generalStats = StatsApi.useGeneralStats();
-  const router = useRouter();
 
   return (
     <>
@@ -61,12 +59,8 @@ export function Welcome() {
               Quanto sei nel{' '}
               <Text
                 inherit
+                span
                 variant="gradient"
-                component="span"
-                gradient={{
-                  from: theme.colors.schermaMePrimary[6],
-                  to: theme.colors.schermaMePrimary[9],
-                }}
               >
                 ranking?
               </Text>
@@ -84,12 +78,8 @@ export function Welcome() {
                   fullWidth
                   variant="gradient"
                   size="lg"
-                  component="a"
+                  component={Link}
                   href={props.route}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    router.push(props.route);
-                  }}
                   rightSection={<IconArrowRight size={14} />}
                 >
                   {props.title}

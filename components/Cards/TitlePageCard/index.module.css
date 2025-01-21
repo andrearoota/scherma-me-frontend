@@ -1,0 +1,14 @@
+.wrapper {
+  background-image: linear-gradient(
+    -60deg,
+    var(--mantine-color-scherma-me-primary-6) 0%,
+    var(--mantine-color-scherma-me-primary-9) 100%
+  );
+}
+
+.title {
+    font-size: 56px;
+    @media (max-width: $mantine-breakpoint-sm) {
+        font-size: 32px;
+    }
+}

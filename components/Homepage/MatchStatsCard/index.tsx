@@ -1,44 +1,45 @@
-import { IconScoreboard } from '@tabler/icons-react';
+import { IconVs } from '@tabler/icons-react';
 import { DonutChart, DonutChartCell } from '@mantine/charts';
 import { ColorSwatch, Flex, Group, Paper, Text, ThemeIcon, useMantineTheme } from '@mantine/core';
-import { PointsForStatsResponse } from '@/api/modules/stats/interfaces';
+import { MatchesForStatsResponse } from '@/api/modules/stats/interfaces';
 import classes from './index.module.css';
 
-export interface PointStatsCardProps {
-  stats: PointsForStatsResponse | undefined;
+export interface MatchStatsCardProps {
+  stats: MatchesForStatsResponse | undefined;
 }
 
-export function PointStatsCard({ stats }: PointStatsCardProps) {
-  if (stats === undefined) {
+export function MatchStatsCard({ stats }: MatchStatsCardProps) {
+  if (!stats) {
     return null;
   }
 
   const theme = useMantineTheme();
   const colors = [theme.colors.violet[5], theme.colors.orange[5]];
 
-  const totalPoints = stats.loser + stats.winner;
+  const totalMatches = stats.directElimination + stats.pool;
   const data: DonutChartCell[] = [
     {
-      name: 'Perdenti',
-      value: stats.loser,
+      name: 'Diretta',
+      value: stats.directElimination,
       color: colors[0],
     },
     {
-      name: 'Vincitori',
-      value: stats.winner,
+      name: 'Girone',
+      value: stats.pool,
       color: colors[1],
     },
   ];
+
   return (
     <Paper radius="md" withBorder className={classes.card} mt={20}>
       <ThemeIcon className={classes.icon} size={60} radius={60}>
-        <IconScoreboard size={32} stroke={1.5} />
+        <IconVs size={32} stroke={1.5} />
       </ThemeIcon>
       <Text ta="center" fw={700} className={classes.title}>
-        Stoccate
+        Assalti
       </Text>
       <Text c="dimmed" ta="center" fz="sm">
-        {totalPoints}
+        {totalMatches}
       </Text>
 
       <Group justify="center" mt="md">

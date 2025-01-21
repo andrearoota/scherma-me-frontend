@@ -1,51 +1,45 @@
-import { IconArrowRight, IconTimeline, IconUsersGroup } from '@tabler/icons-react';
-import { BarChart } from '@mantine/charts';
-import { Button, Paper, Text, ThemeIcon } from '@mantine/core';
-import { ClubsForStatsResponse } from '@/api/modules/stats/interfaces';
-import classes from './index.module.css';
+import { useMemo } from 'react';
+import { RadialBarChart } from '@mantine/charts';
+import { ChartsData } from '@/app/rankings/[category]/[weapon]/[gender]/[id]/page';
+import { WeaponEnum } from '@/assets/enum/weaponEnum';
+import StatsCard, { LegendData } from '../StatsCard';
 
-export interface ClubStatsCardProps {
-  stats: ClubsForStatsResponse[];
+interface ClubStatsCardProps {
+  chartData: ChartsData[];
 }
 
-export function ClubStatsCard({ stats }: ClubStatsCardProps) {
-  const clubs = stats.filter((e) => e.weapon !== 'all');
+export default function ClubStatsCard({ chartData }: ClubStatsCardProps): JSX.Element {
+  const dataForChart = useMemo<LegendData[]>(() => {
+    return Object.values(WeaponEnum).map((weapon, index) => ({
+      name: weapon,
+      value: new Set(
+        chartData
+          .filter((item) => item.weapon === weapon)
+          .map((item) => item.club)
+          .flat()
+      ).size,
+      color: `hsl(${index * 45}, 70%, 50%)`, // Example color scheme
+    }));
+  }, [chartData]);
+
+  const chart = useMemo(
+    () => (
+      <RadialBarChart
+        w={160}
+        h={160}
+        data={dataForChart}
+        dataKey="value"
+      />
+    ),
+    [dataForChart]
+  );
+
+  const uniqueClubs = useMemo(
+    () => new Set(chartData.map((item) => item.club).flat()).size,
+    [chartData]
+  );
 
   return (
-    <Paper radius="md" withBorder className={classes.card} mt={20}>
-      <ThemeIcon className={classes.icon} size={60} radius={60}>
-        <IconUsersGroup size={32} stroke={1.5} />
-      </ThemeIcon>
-      <Text ta="center" fw={700} className={classes.title}>
-        Club in attività
-      </Text>
-      <Text c="dimmed" ta="center" fz="sm">
-        {stats.find((e) => e.weapon === 'all')?.count} in totale
-      </Text>
-
-      <BarChart
-        mt="md"
-        h={200}
-        data={clubs}
-        dataKey="weapon"
-        series={[{ name: 'count', color: 'violet.6' }]}
-        withBarValueLabel
-        tickLine="none"
-        gridAxis="none"
-        withYAxis={false}
-        withTooltip={false}
-        barProps={{ radius: [5, 5, 0, 0] }}
-      />
-
-      <Button
-        fullWidth
-        variant="light"
-        leftSection={<IconTimeline size={14} />}
-        rightSection={<IconArrowRight size={14} />}
-        mt="md"
-      >
-        Statistiche
-      </Button>
-    </Paper>
+    <StatsCard title="Club per arma" chart={chart} legend={dataForChart} total={uniqueClubs} />
   );
 }

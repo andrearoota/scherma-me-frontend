@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {
   IconBook,
   IconChartPie3,
@@ -107,7 +108,7 @@ export function Header() {
     <Box>
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
-          <a href="#">{isDark ? <LogoOnDark height={24} /> : <LogoOnLight height={24} />}</a>
+          <Link href="/">{isDark ? <LogoOnDark height={24} /> : <LogoOnLight height={24} />}</Link>
 
           <Group visibleFrom="md">
             <SearchControl />

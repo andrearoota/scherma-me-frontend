@@ -1,11 +1,13 @@
+'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconSearch } from '@tabler/icons-react';
 import { em, rem } from '@mantine/core';
 import { useDebouncedValue, useMediaQuery } from '@mantine/hooks';
 import { Spotlight, SpotlightActionGroupData } from '@mantine/spotlight';
-import { toSeoUrl } from '@/utils';
 import { SearchApi } from '@/api';
+import { toSeoUrl } from '@/utils';
 
 const baseActions: SpotlightActionGroupData[] = [
   {

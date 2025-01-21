@@ -4,6 +4,7 @@ import { Box, Divider, Group, Paper, Stack, Text, ThemeIcon } from '@mantine/cor
 import { BirthdaysForStatsResponse } from '@/api/modules/stats/interfaces';
 import { toSeoUrl } from '@/utils';
 import classes from './index.module.css';
+import Link from 'next/link';
 
 export interface BirthdaysCardProps {
   birthdays: BirthdaysForStatsResponse[];
@@ -29,7 +30,7 @@ export function BirthdaysCard({ birthdays }: BirthdaysCardProps) {
             </Group>
             <Text
               fw={500}
-              component="a"
+              component={Link}
               href={`${birthday.fisCode}/${toSeoUrl(birthday.fullName)}`}
             >
               {birthday.fullName}

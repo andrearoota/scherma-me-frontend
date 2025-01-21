@@ -1,6 +1,17 @@
 'use client';
 
-import { createTheme, MantineColorsTuple } from '@mantine/core';
+import { createTheme, DefaultMantineColor, MantineColorsTuple } from '@mantine/core';
+
+/**
+ * Extend MantineThemeColorsOverride interface to add custom colors
+ */
+type ExtendedCustomColors = 'scherma-me-primary' | DefaultMantineColor;
+
+declare module '@mantine/core' {
+  export interface MantineThemeColorsOverride {
+    colors: Record<ExtendedCustomColors, MantineColorsTuple>;
+  }
+}
 
 const schermaMePrimary: MantineColorsTuple = [
   '#ebfcff',
@@ -16,11 +27,19 @@ const schermaMePrimary: MantineColorsTuple = [
 ];
 
 export const theme = createTheme({
+  primaryColor: 'scherma-me-primary',
+  primaryShade: 8,
+  black: '#202122',
   fontFamily: 'Verdana, sans-serif',
   fontFamilyMonospace: 'Monaco, Courier, monospace',
   headings: { fontFamily: 'Readex Pro, sans-serif', fontWeight: '500' },
-  
+  defaultRadius: 'md',
   colors: {
-    schermaMePrimary,
+    'scherma-me-primary': schermaMePrimary,
   },
+  defaultGradient: {
+    deg: 90,
+    from: 'scherma-me-primary.7',
+    to: 'scherma-me-primary.9',
+  }
 });

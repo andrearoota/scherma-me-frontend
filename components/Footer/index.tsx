@@ -1,12 +1,17 @@
 'use client';
 
+import Link from 'next/link';
+import { IconBrandFacebook, IconBrandInstagram } from '@tabler/icons-react';
 import {
-  IconBrandFacebook,
-  IconBrandInstagram,
-  IconBrandTwitter,
-  IconBrandYoutube,
-} from '@tabler/icons-react';
-import { ActionIcon, Container, Group, Stack, Text, useComputedColorScheme } from '@mantine/core';
+  ActionIcon,
+  Box,
+  Container,
+  Flex,
+  Group,
+  SimpleGrid,
+  Text,
+  useComputedColorScheme,
+} from '@mantine/core';
 import LogoOnDark from '@/assets/logo/logoOnDark';
 import LogoOnLight from '@/assets/logo/logoOnLight';
 import classes from './index.module.css';
@@ -22,44 +27,55 @@ export function Footer() {
   const thisYear = new Date().getFullYear();
 
   const links = sections.map((link, index) => (
-    <Text
-      key={index}
-      className={classes.link}
-      component="a"
-      href={link.link}
-      onClick={(event) => event.preventDefault()}
-    >
+    <Text size="md" key={index} className={classes.link} component={Link} href={link.link}>
       {link.label}
     </Text>
   ));
 
   return (
     <footer className={classes.footer}>
-      <Container className={classes.inner}>
-        <div className={classes.logo}>
-          <a href="#">{isDark ? <LogoOnDark height={30} /> : <LogoOnLight height={30} />}</a>
+      <Container px="xl">
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+          <Box ta={{ base: 'center', sm: 'left' }}>
+            <Link href="/">
+              {isDark ? <LogoOnDark height={30} /> : <LogoOnLight height={30} />}
+            </Link>
 
-          <Text size="xs" c="dimmed" className={classes.description}>
-            Questo progetto è nato con l'obiettivo di dare forma ai ranking Excel pubblicati dalla{' '}
-            <a href="https://federscherma.it/" target="_blank" rel="noreferrer">
-              Federazione Italiana Scherma
-            </a>
-            , pertanto ogni dato presente in scherma.me è liberamente consultabile dal sito
-            ufficiale FIS
-          </Text>
-        </div>
-        <Stack className={classes.groups}>{links}</Stack>
+            <Text size="sm" c="dimmed">
+              Questo progetto è nato con l'obiettivo di dare forma ai ranking Excel pubblicati dalla{' '}
+              <Text
+                component="a"
+                href="https://federscherma.it/"
+                rel="noreferrer noopener"
+                target="_blank"
+              >
+                Federazione Italiana Scherma
+              </Text>
+              , pertanto ogni dato presente in scherma.me è liberamente consultabile dal sito
+              ufficiale FIS
+            </Text>
+          </Box>
+          <Flex
+            direction="column"
+            align={{ base: 'center', sm: 'flex-end' }}
+            justify={{ base: 'center', sm: 'flex-end' }}
+            gap="md"
+          >
+            {links}
+          </Flex>
+        </SimpleGrid>
       </Container>
       <Container className={classes.afterFooter}>
         <Text c="dimmed" size="sm">
           © {thisYear}{' '}
-          <a
-            href="https://www.facebook.com/andrea.rota.520"
+          <Text
+            component="a"
+            href="https://www.linkedin.com/in/andrea-rota-6a2328146/"
             rel="noopener noreferrer"
             target="_blank"
           >
             Andrea Rota
-          </a>
+          </Text>
           . Tutti i diritti riservati.
         </Text>
 
