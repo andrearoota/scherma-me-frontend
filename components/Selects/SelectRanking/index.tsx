@@ -34,11 +34,7 @@ export default function SelectRanking({
   const router = useRouter();
 
   // Fetch rankings data
-  const {
-    data: listRankings = [],
-    isLoading,
-    isError,
-  } = RankingApi.useListRankings(
+  const { data: listRankings = [] } = RankingApi.useListRankings(
     rankingFilter.category,
     rankingFilter.weapon,
     rankingFilter.gender
@@ -117,14 +113,6 @@ export default function SelectRanking({
     }));
     router.push(`..\\${rankingId}`);
   };
-
-  // TODO: Improve loading and error states
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (isError) {
-    return <div>Error loading rankings</div>;
-  }
 
   return (
     <Group gap="md" align="flex-start" grow>

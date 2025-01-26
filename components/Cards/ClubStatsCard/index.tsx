@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { RadialBarChart } from '@mantine/charts';
-import { ChartsData } from '@/app/rankings/[category]/[weapon]/[gender]/[id]/page';
 import { WeaponEnum } from '@/assets/enum/weaponEnum';
 import StatsCard, { LegendData } from '../StatsCard';
+import { ChartsData } from '@/components/Sections/SingleRankingPage';
 
 interface ClubStatsCardProps {
   chartData: ChartsData[];

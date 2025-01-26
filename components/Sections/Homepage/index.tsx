@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { IconArrowRight } from '@tabler/icons-react';
 import { Box, Button, Center, Container, Grid, Text, Title } from '@mantine/core';
 import { StatsApi } from '@/api';
-import { SearchHomeControl } from '../Search/SearchButton/SearchHomeControl';
+import { SearchHomeControl } from '@/components/Search/SearchButton/SearchHomeControl';
 import { AthleteStatsCard } from './AthleteStatsCard';
 import { BirthdaysCard } from './BirthdaysCard';
 import { ClubStatsCard } from './ClubStatsCard';
@@ -57,11 +57,7 @@ export function Homepage() {
           <div>
             <Title className={classes.title} ta="center">
               Quanto sei nel{' '}
-              <Text
-                inherit
-                span
-                variant="gradient"
-              >
+              <Text inherit span variant="gradient">
                 ranking?
               </Text>
             </Title>
@@ -90,9 +86,9 @@ export function Homepage() {
         </Container>
       </Box>
 
-      <Container fluid>
+      <Container fluid mt="md">
         <Grid>
-          <Grid.Col span="auto">
+          <Grid.Col span={{ base: 12, sm: 'auto' }} miw={300}>
             <BirthdaysCard birthdays={generalStats.data?.birthdays || []} />
           </Grid.Col>
           <Grid.Col span="auto">

@@ -1,33 +1,44 @@
-import { IconFriends } from '@tabler/icons-react';
-import { DonutChart } from '@mantine/charts';
+import { IconScoreboard } from '@tabler/icons-react';
+import { DonutChart, DonutChartCell } from '@mantine/charts';
 import { ColorSwatch, Flex, Group, Paper, Text, ThemeIcon, useMantineTheme } from '@mantine/core';
-import { AthletesForStatsResponse } from '@/api/modules/stats/interfaces';
+import { PointsForStatsResponse } from '@/api/modules/stats/interfaces';
 import classes from './index.module.css';
 
-export interface AthleteStatsCardProps {
-  stats: AthletesForStatsResponse[];
+export interface PointStatsCardProps {
+  stats: PointsForStatsResponse | undefined;
 }
 
-export function AthleteStatsCard({ stats }: AthleteStatsCardProps) {
+export function PointStatsCard({ stats }: PointStatsCardProps) {
+  if (!stats) {
+    return null;
+  }
+
   const theme = useMantineTheme();
   const colors = [theme.colors.violet[5], theme.colors.orange[5]];
 
-  const totalAthletes = stats.reduce((acc, curr) => acc + curr.count, 0);
-  const data = stats.map((stat, index) => ({
-    name: stat.gender,
-    value: stat.count,
-    color: colors[index],
-  }));
+  const totalPoints = stats.loser + stats.winner;
+  const data: DonutChartCell[] = [
+    {
+      name: 'Perdenti',
+      value: stats.loser,
+      color: colors[0],
+    },
+    {
+      name: 'Vincitori',
+      value: stats.winner,
+      color: colors[1],
+    },
+  ];
   return (
-    <Paper radius="md" withBorder className={classes.card} mt={20}>
+    <Paper radius="xl" withBorder className={classes.card} mt={20}>
       <ThemeIcon className={classes.icon} size={60} radius={60}>
-        <IconFriends size={32} stroke={1.5} />
+        <IconScoreboard size={32} stroke={1.5} />
       </ThemeIcon>
       <Text ta="center" fw={700} className={classes.title}>
-        Atleti in attività
+        Stoccate
       </Text>
       <Text c="dimmed" ta="center" fz="sm">
-        {totalAthletes} in totale
+        {totalPoints}
       </Text>
 
       <Group justify="center" mt="md">

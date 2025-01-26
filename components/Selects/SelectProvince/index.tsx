@@ -29,7 +29,7 @@ export default function SelectProvince({
   );
 
   return (
-    <Flex direction={{base: "column", xs: "row"}} gap="md" align="stretch">
+    <Flex direction={{ base: 'column', xs: 'row' }} gap={{ base: 'xs', xs: 'md' }} align="stretch">
       <MultiSelect
         label="Seleziona la regione"
         placeholder="Regioni"

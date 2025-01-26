@@ -12,7 +12,7 @@ export function ClubStatsCard({ stats }: ClubStatsCardProps) {
   const clubs = stats.filter((e) => e.weapon !== 'all');
 
   return (
-    <Paper radius="md" withBorder className={classes.card} mt={20}>
+    <Paper radius="xl" withBorder className={classes.card} mt={20}>
       <ThemeIcon className={classes.icon} size={60} radius={60}>
         <IconUsersGroup size={32} stroke={1.5} />
       </ThemeIcon>

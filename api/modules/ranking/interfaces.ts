@@ -1,24 +1,4 @@
-export interface Weapon {
-  id: string;
-  name: string;
-}
-
-export interface Category {
-  id: number;
-  name: string;
-  startYear: number;
-  endYear: number;
-}
-
-export interface Gender {
-  id: string;
-  name: string;
-}
-
-export interface Season {
-  id: number;
-  name: string;
-}
+import { Category, Gender, Season, Weapon } from '@/api/utils/commonInterfaces';
 
 export interface Athlete {
   fullName: string;

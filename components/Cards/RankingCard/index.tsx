@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo } from 'react';
 import { Divider, Paper, Stack } from '@mantine/core';
 import { RankingApi } from '@/api';
 import { RankingResponse } from '@/api/modules/ranking/interfaces';
@@ -34,10 +34,19 @@ export default function RankingCard({
     );
   }, [data, isError, isLoading, filteredData, setOriginalRankingData]);
 
+  const podium = useMemo(() => {
+    return (
+      filteredData?.rows
+        .sort((a, b) => a.position - b.position)
+        .slice(0, 3)
+        .map((row) => row.athlete.fullName) ?? []
+    );
+  }, [filteredData]);
+
   return (
     <Paper radius="xl" p="md">
       <Stack gap={0}>
-        <Podium rank={filteredData?.rows.slice(0, 3).map((row) => row.athlete.fullName) ?? []} />
+        <Podium rank={podium} />
         <Divider mt="sm" />
         <Table data={filteredData} isError={isError} isLoading={isLoading} />
       </Stack>

@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
+import Link from 'next/link';
 import { IconCake } from '@tabler/icons-react';
 import { Box, Divider, Group, Paper, Stack, Text, ThemeIcon } from '@mantine/core';
 import { BirthdaysForStatsResponse } from '@/api/modules/stats/interfaces';
 import { toSeoUrl } from '@/utils';
 import classes from './index.module.css';
-import Link from 'next/link';
 
 export interface BirthdaysCardProps {
   birthdays: BirthdaysForStatsResponse[];
@@ -41,7 +41,7 @@ export function BirthdaysCard({ birthdays }: BirthdaysCardProps) {
   }, [birthdays, thisYear]);
 
   return (
-    <Paper radius="md" withBorder className={classes.card} mt={20}>
+    <Paper radius="xl" withBorder className={classes.card} mt={20}>
       <ThemeIcon className={classes.icon} size={60} radius={60}>
         <IconCake size={32} stroke={1.5} />
       </ThemeIcon>

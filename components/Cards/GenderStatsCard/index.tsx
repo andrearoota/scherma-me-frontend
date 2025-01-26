@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { DonutChart, DonutChartCell } from '@mantine/charts';
 import { useMantineTheme } from '@mantine/core';
-import { ChartsData } from '@/app/rankings/[category]/[weapon]/[gender]/[id]/page';
 import { GenderEnum } from '@/assets/enum/genderEnum';
 import SimpleTable from '@/components/Tables/SimpleTable';
 import StatsCard from '../StatsCard';
+import { ChartsData } from '@/components/Sections/SingleRankingPage';
 
 interface GenderStatsData {
   club: string;

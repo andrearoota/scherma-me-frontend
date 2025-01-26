@@ -27,9 +27,9 @@ export default function Table({ data, isError, isLoading }: TableProps): JSX.Ele
   const isDesktop = useMediaQuery(`(min-width: ${theme.breakpoints.md})`);
 
   const [opened, { open, close }] = useDisclosure(false);
-  const [selectedRowId, setSelectedRowId] = useState<number>();
+  const [selectedRowId, setSelectedRowId] = useState<Row>();
   const openModal = (row: MRT_Row<Row>) => {
-    setSelectedRowId(row.original.id);
+    setSelectedRowId(row.original);
     open();
   };
 
@@ -191,7 +191,7 @@ export default function Table({ data, isError, isLoading }: TableProps): JSX.Ele
   return (
     <>
       <MantineReactTable table={table} />
-      <ModalRank row={selectedRowId} opened={opened} onClose={close} />
+      <ModalRank row={selectedRowId} ranking={data!} opened={opened} onClose={close} />
     </>
   );
 }

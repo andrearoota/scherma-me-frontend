@@ -1,4 +1,5 @@
-import '@mantine/core/styles.css';
+import '@mantine/core/styles.css'; // Import core styles
+import '@mantine/dates/styles.css'; // Import dates styles
 import '@mantine/spotlight/styles.css'; // Import spotlight styles
 import '@mantine/charts/styles.css'; // Import charts styles
 import 'mantine-react-table/styles.css'; //make sure MRT styles were imported in your app root (once)

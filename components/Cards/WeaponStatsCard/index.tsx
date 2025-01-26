@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { DonutChart, DonutChartCell } from '@mantine/charts';
-import { ChartsData } from '@/app/rankings/[category]/[weapon]/[gender]/[id]/page';
 import { WeaponEnum } from '@/assets/enum/weaponEnum';
+import { ChartsData } from '@/components/Sections/SingleRankingPage';
 import SimpleTable from '@/components/Tables/SimpleTable';
 import StatsCard from '../StatsCard';
 

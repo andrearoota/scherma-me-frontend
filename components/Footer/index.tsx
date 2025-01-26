@@ -34,7 +34,7 @@ export function Footer() {
 
   return (
     <footer className={classes.footer}>
-      <Container px="xl">
+      <Container>
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
           <Box ta={{ base: 'center', sm: 'left' }}>
             <Link href="/">
