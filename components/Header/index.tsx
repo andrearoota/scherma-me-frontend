@@ -2,16 +2,20 @@
 
 import Link from 'next/link';
 import {
-  IconBook,
-  IconChartPie3,
+  IconArrowRight,
+  IconBrandFacebook,
+  IconBrandInstagram,
+  IconBrandLinkedin,
   IconChevronDown,
-  IconCode,
-  IconCoin,
-  IconFingerprint,
-  IconNotification,
+  IconChevronUp,
+  IconCoffee,
+  IconHome,
+  IconListNumbers,
+  IconMail,
+  IconUsersGroup,
 } from '@tabler/icons-react';
 import {
-  Anchor,
+  ActionIcon,
   Box,
   Burger,
   Button,
@@ -19,13 +23,14 @@ import {
   Collapse,
   Divider,
   Drawer,
+  Flex,
   Group,
   HoverCard,
   ScrollArea,
   SimpleGrid,
+  Stack,
   Text,
-  ThemeIcon,
-  UnstyledButton,
+  Title,
   useComputedColorScheme,
   useMantineTheme,
 } from '@mantine/core';
@@ -35,50 +40,8 @@ import LogoOnLight from '@/assets/logo/logoOnLight';
 import ColorSchemeToggle from '../Buttons/ColorSchemeToggle';
 import { SearchControl } from '../Search/SearchButton/SearchControl';
 import { SearchMobileControl } from '../Search/SearchButton/SearchMobileControl';
+import { categoriesItems } from '../Sections/Homepage';
 import classes from './index.module.css';
-
-const mockdata = [
-  {
-    icon: IconCode,
-    title: 'Under 14',
-    description: 'This Pokémon’s cry is very loud and distracting',
-  },
-  {
-    icon: IconCoin,
-    title: 'Cadetti',
-    description: 'The fluid of Smeargle’s tail secretions changes',
-  },
-  {
-    icon: IconBook,
-    title: 'Giovani',
-    description: 'Yanma is capable of seeing 360 degrees without',
-  },
-  {
-    icon: IconFingerprint,
-    title: 'Under 23',
-    description: 'The shell’s rounded shape and the grooves on its.',
-  },
-  {
-    icon: IconChartPie3,
-    title: 'Assoluti',
-    description: 'This Pokémon uses its flying ability to quickly chase',
-  },
-  {
-    icon: IconNotification,
-    title: 'Master',
-    description: 'Combusken battles with the intensely hot flames it spews',
-  },
-  {
-    icon: IconNotification,
-    title: 'Paralimpico',
-    description: 'Combusken battles with the intensely hot flames it spews',
-  },
-  {
-    icon: IconNotification,
-    title: 'Non vedenti',
-    description: 'Combusken battles with the intensely hot flames it spews',
-  },
-];
 
 export function Header() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -86,36 +49,33 @@ export function Header() {
   const theme = useMantineTheme();
   const isDark = useComputedColorScheme() === 'dark';
 
-  const links = mockdata.map((item) => (
-    <UnstyledButton className={classes.subLink} key={item.title}>
-      <Group wrap="nowrap" align="flex-start">
-        <ThemeIcon size={34} variant="default" radius="md">
-          <item.icon size={22} color={theme.colors.blue[6]} />
-        </ThemeIcon>
-        <div>
-          <Text size="sm" fw={500}>
-            {item.title}
-          </Text>
-          <Text size="xs" c="dimmed">
-            {item.description}
-          </Text>
-        </div>
-      </Group>
-    </UnstyledButton>
+  const links = categoriesItems.map((item) => (
+    <Button
+      fullWidth
+      variant="light"
+      size="xs"
+      component={Link}
+      href={item.route}
+      rightSection={<IconArrowRight size={14} />}
+    >
+      {item.title}
+    </Button>
   ));
 
   return (
     <Box>
       <header className={classes.header}>
-        <Group justify="space-between" h="100%">
-          <Link href="/">{isDark ? <LogoOnDark height={24} /> : <LogoOnLight height={24} />}</Link>
+        <Group justify="space-between" align="center" h="100%">
+          <Link href="/" style={{ display: 'flex' }}>
+            {isDark ? <LogoOnDark height={24} /> : <LogoOnLight height={24} />}
+          </Link>
 
-          <Group visibleFrom="md">
+          <Group visibleFrom="sm">
             <SearchControl />
           </Group>
 
-          <Group h="100%" gap={0} visibleFrom="sm">
-            <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
+          <Group h="100%" gap={0} visibleFrom="md">
+            <HoverCard width={400} position="bottom" radius="md" shadow="md" withinPortal>
               <HoverCard.Target>
                 <a href="#" className={classes.link}>
                   <Center inline>
@@ -128,50 +88,29 @@ export function Header() {
               </HoverCard.Target>
 
               <HoverCard.Dropdown style={{ overflow: 'hidden' }}>
-                <Group justify="space-between" px="md">
-                  <Text fw={500}>Features</Text>
-                  <Anchor href="#" fz="xs">
-                    View all
-                  </Anchor>
-                </Group>
+                <Text fw={500} px="md">
+                  Categorie
+                </Text>
 
                 <Divider my="sm" />
 
-                <SimpleGrid cols={2} spacing={0}>
-                  {links}
-                </SimpleGrid>
-
-                <div className={classes.dropdownFooter}>
-                  <Group justify="space-between">
-                    <div>
-                      <Text fw={500} fz="sm">
-                        Get started
-                      </Text>
-                      <Text size="xs" c="dimmed">
-                        Their food sources have decreased, and their numbers
-                      </Text>
-                    </div>
-                    <Button variant="default">Get started</Button>
-                  </Group>
-                </div>
+                <SimpleGrid cols={2}>{links}</SimpleGrid>
               </HoverCard.Dropdown>
             </HoverCard>
-            <a href="#" className={classes.link}>
+            <Link href="#" className={classes.link}>
               Club
-            </a>
-            <ColorSchemeToggle />
+            </Link>
+            <Box ml="xs">
+              <ColorSchemeToggle />
+            </Box>
           </Group>
 
-          {/* <Group visibleFrom="sm">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
-          </Group> */}
-
-          <Group hiddenFrom="md">
-            <SearchMobileControl />
+          <Group hiddenFrom="md" gap={5}>
+            <Flex hiddenFrom="sm" p={5}>
+              <SearchMobileControl />
+            </Flex>
+            <Burger opened={drawerOpened} onClick={toggleDrawer} />
           </Group>
-
-          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
         </Group>
       </header>
 
@@ -180,40 +119,121 @@ export function Header() {
         onClose={closeDrawer}
         size="100%"
         padding="md"
-        title="Navigation"
+        title="Menu"
         hiddenFrom="sm"
         zIndex={1000000}
       >
         <ScrollArea h="calc(100vh - 80px" mx="-md">
           <Divider my="sm" />
-
-          <a href="#" className={classes.link}>
-            Home
-          </a>
-          <UnstyledButton className={classes.link} onClick={toggleLinks}>
+          <Link href="/" className={classes.link}>
+            <IconHome size={24} />
+            <Text component="span" mx={5}>
+              Home
+            </Text>
+          </Link>
+          <Box className={classes.link} onClick={toggleLinks}>
             <Center inline>
-              <Box component="span" mr={5}>
-                Features
-              </Box>
-              <IconChevronDown size={16} color={theme.colors.blue[6]} />
+              <IconListNumbers size={24} stroke={1.5} />
+              <Text component="span" mx={5}>
+                Ranking
+              </Text>
+              {linksOpened ? (
+                <IconChevronUp size={16} color={theme.colors['scherma-me-primary'][8]} />
+              ) : (
+                <IconChevronDown size={16} color={theme.colors['scherma-me-primary'][8]} />
+              )}
             </Center>
-          </UnstyledButton>
-          <Collapse in={linksOpened}>{links}</Collapse>
-          <a href="#" className={classes.link}>
-            Learn
+          </Box>
+          <Collapse in={linksOpened}>
+            <Stack gap="xs" px="lg">
+              {links}
+            </Stack>
+          </Collapse>
+          <Link href="/club" className={classes.link}>
+            <IconUsersGroup size={24} stroke={1.5} />
+            <Text component="span" ml={5}>
+              Statistiche Club
+            </Text>
+          </Link>
+
+          <Divider my="md" />
+
+          <SimpleGrid cols={2} px="md">
+            <Box>
+              <Title order={5} mb="xs">
+                Social
+              </Title>
+
+              <Group justify="flex-start" wrap="nowrap">
+                <ActionIcon
+                  size="xl"
+                  variant="default"
+                  component="a"
+                  target="_blank"
+                  href="https://www.instagram.com/scherma.me/"
+                >
+                  <IconBrandInstagram stroke={1.5} />
+                </ActionIcon>
+                <ActionIcon
+                  size="xl"
+                  variant="default"
+                  component="a"
+                  target="_blank"
+                  href="https://www.facebook.com/scherma.me"
+                >
+                  <IconBrandFacebook stroke={1.5} />
+                </ActionIcon>
+              </Group>
+            </Box>
+            <Box>
+              <Title order={5} mb="xs">
+                Cambia tema
+              </Title>
+              <Group justify="flex-start" wrap="nowrap">
+                <ColorSchemeToggle />
+              </Group>
+            </Box>
+          </SimpleGrid>
+
+          <Divider my="md" />
+
+          <Title order={5} px="md">
+            Sviluppatore
+          </Title>
+
+          <a
+            href="https://www.linkedin.com/in/andrea-rota-6a2328146/"
+            target="_blank"
+            className={classes.link}
+            rel="noreferrer"
+          >
+            <IconBrandLinkedin size={24} stroke={1.5} />
+            <Text component="span" ml={5}>
+              Chi sono
+            </Text>
           </a>
-          <a href="#" className={classes.link}>
-            Academy
+          <a
+            href="mailto:andrea.rota.98@gmail.com"
+            target="_blank"
+            className={classes.link}
+            rel="noreferrer"
+          >
+            <IconMail size={24} stroke={1.5} />
+            <Text component="span" ml={5}>
+              Contattami
+            </Text>
           </a>
-
-          <Divider my="sm" />
-
-          <ColorSchemeToggle />
-
-          {/* <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
-          </Group> */}
+          <a
+            href="https://paypal.me/rota98?locale.x=it_IT"
+            target="_blank"
+            className={classes.link}
+            rel="noreferrer"
+          >
+            <IconCoffee size={24} stroke={1.5} />
+            <Text component="span" ml={5}>
+              Supporta il progetto
+            </Text>
+          </a>
         </ScrollArea>
       </Drawer>
     </Box>

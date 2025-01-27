@@ -80,10 +80,24 @@ export function Footer() {
         </Text>
 
         <Group gap={0} className={classes.social} justify="flex-end" wrap="nowrap">
-          <ActionIcon size="lg" color="gray" variant="subtle">
+          <ActionIcon
+            size="lg"
+            color="gray"
+            variant="subtle"
+            component="a"
+            target="_blank"
+            href="https://www.instagram.com/scherma.me/"
+          >
             <IconBrandInstagram size={18} stroke={1.5} />
           </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle">
+          <ActionIcon
+            size="lg"
+            color="gray"
+            variant="subtle"
+            component="a"
+            target="_blank"
+            href="https://www.facebook.com/scherma.me"
+          >
             <IconBrandFacebook size={18} stroke={1.5} />
           </ActionIcon>
         </Group>

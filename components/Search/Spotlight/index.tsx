@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { IconSearch } from '@tabler/icons-react';
+import { IconSearch, IconUser, IconUsersGroup } from '@tabler/icons-react';
 import { em, rem } from '@mantine/core';
 import { useDebouncedValue, useMediaQuery } from '@mantine/hooks';
 import { Spotlight, SpotlightActionGroupData } from '@mantine/spotlight';
@@ -35,7 +35,8 @@ export function Search() {
       .map((hint) => ({
         id: hint.fisCode!,
         label: hint.fullName || '',
-        description: hint.fullName || '',
+        description: hint.fisCode || '',
+        leftSection: <IconUser size={24} stroke={1.5} />,
         onClick: () => router.push(`/${hint.fisCode}/${toSeoUrl(hint.fullName!)}`),
       })) || [];
 
@@ -46,13 +47,15 @@ export function Search() {
         id: hint.codeLetter!,
         label: hint.name || hint.codeLetter!,
         description: hint.codeLetter!,
-        onClick: () => router.push(`/clubs/${hint.codeLetter}`),
+        leftSection: <IconUsersGroup size={24} stroke={1.5} />,
+        onClick: () => router.push(`/club/${hint.codeLetter}`),
       })) || [];
 
   return (
     <Spotlight
       shortcut={['mod + K', 'mod + P', '/']}
       actions={baseActions}
+      autoFocus
       highlightQuery
       radius="md"
       fullScreen={isMobile}

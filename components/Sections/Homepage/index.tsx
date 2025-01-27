@@ -1,8 +1,10 @@
 'use client';
 
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { IconArrowRight } from '@tabler/icons-react';
-import { Box, Button, Center, Container, Grid, Text, Title } from '@mantine/core';
+import { Box, Button, Center, Container, Grid, Text, Title, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { StatsApi } from '@/api';
 import { SearchHomeControl } from '@/components/Search/SearchButton/SearchHomeControl';
 import { AthleteStatsCard } from './AthleteStatsCard';
@@ -12,7 +14,7 @@ import { MatchStatsCard } from './MatchStatsCard';
 import { PointStatsCard } from './PointStatsCard';
 import classes from './index.module.css';
 
-const rankingItems = [
+export const categoriesItems = [
   {
     title: 'Under 14',
     route: '/ranking/under-14',
@@ -49,6 +51,27 @@ const rankingItems = [
 
 export function Homepage() {
   const generalStats = StatsApi.useGeneralStats();
+  const theme = useMantineTheme();
+  const isDesktop = useMediaQuery(`(min-width: ${theme.breakpoints.md})`);
+
+  const categoriesButtons = useMemo(
+    () =>
+      categoriesItems.map((props, index) => (
+        <Grid.Col span={{ base: 6, xs: 4, sm: 'auto' }} key={index}>
+          <Button
+            fullWidth
+            variant="gradient"
+            size={isDesktop ? 'lg' : 'md'}
+            component={Link}
+            href={props.route}
+            rightSection={<IconArrowRight size={14} />}
+          >
+            {props.title}
+          </Button>
+        </Grid.Col>
+      )),
+    [categoriesItems, isDesktop]
+  );
 
   return (
     <>
@@ -67,22 +90,7 @@ export function Homepage() {
           </div>
         </Center>
         <Container fluid w="100%" my="md">
-          <Grid justify="center">
-            {rankingItems.map((props, index) => (
-              <Grid.Col span={{ base: 6, xs: 4, sm: 'auto' }} key={index}>
-                <Button
-                  fullWidth
-                  variant="gradient"
-                  size="lg"
-                  component={Link}
-                  href={props.route}
-                  rightSection={<IconArrowRight size={14} />}
-                >
-                  {props.title}
-                </Button>
-              </Grid.Col>
-            ))}
-          </Grid>
+          <Grid justify="center">{categoriesButtons}</Grid>
         </Container>
       </Box>
 
